@@ -62,7 +62,7 @@ function ThemeToggle({ theme, setTheme }) {
   );
 }
 
-function Navbar({ theme, setTheme }) {
+function Navbar() {
   const D = window.DATA;
   const [scrolled, setScrolled] = useState(false);
   const [active, setActive] = useState("home");
@@ -111,7 +111,6 @@ function Navbar({ theme, setTheme }) {
         </nav>
 
         <div className="nav-right">
-          <ThemeToggle theme={theme} setTheme={setTheme} />
           <a href="#contact" onClick={(e) => go(e, "contact")} className="btn btn-gold nav-cta">Work with me</a>
           <button className="nav-burger" onClick={() => setOpen(!open)} aria-label="Menu">
             <Icon name={open ? "close" : "menu"} size={22} />

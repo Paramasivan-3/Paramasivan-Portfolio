@@ -13,18 +13,9 @@ function hexToRgb(hex) {
   return [(n >> 16) & 255, (n >> 8) & 255, n & 255].join(", ");
 }
 
-function useTheme() {
-  const [theme, setTheme] = useState(() => localStorage.getItem("pv-theme") || "dark");
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("pv-theme", theme);
-  }, [theme]);
-  return [theme, setTheme];
-}
-
 function App() {
   const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
-  const [theme, setTheme] = useTheme();
+  useEffect(() => { document.documentElement.setAttribute("data-theme", "dark"); }, []);
 
   useEffect(() => {
     const g = t.gold || TWEAK_DEFAULTS.gold;
@@ -41,7 +32,7 @@ function App() {
     <>
       <Loader />
       <ScrollProgress />
-      <Navbar theme={theme} setTheme={setTheme} />
+      <Navbar />
       <main>
         <Hero variant={variant} />
         <About />
