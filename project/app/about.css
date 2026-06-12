@@ -346,19 +346,20 @@
 }
 
 @keyframes abbr-glow {
-  0%, 100% { filter: drop-shadow(0 0 6px currentColor);  }
-  50%       { filter: drop-shadow(0 0 16px currentColor); }
+  0%, 100% { filter: drop-shadow(0 0 6px var(--sc));  }
+  50%       { filter: drop-shadow(0 0 18px var(--sc)); }
 }
 
-.big-skill-abbr {
-  font-family: var(--display); font-weight: 800;
-  font-size: clamp(24px, 2.6vw, 34px);
-  line-height: 1; letter-spacing: -0.02em;
+.big-skill-logo {
+  width: clamp(44px, 5.5vw, 62px);
+  height: clamp(44px, 5.5vw, 62px);
+  object-fit: contain;
   animation: abbr-glow 3.4s ease-in-out infinite;
   animation-delay: var(--float-delay, 0s);
+  transition: filter 0.3s var(--ease);
 }
-.big-skill-card:hover .big-skill-abbr {
-  filter: drop-shadow(0 0 28px currentColor);
+.big-skill-card:hover .big-skill-logo {
+  filter: drop-shadow(0 0 28px var(--sc)) brightness(1.15);
 }
 
 .big-skill-name {
