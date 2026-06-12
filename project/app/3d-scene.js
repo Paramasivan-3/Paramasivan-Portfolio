@@ -53,49 +53,7 @@
     var points = new THREE.Points(pGeo, pMat);
     scene.add(points);
 
-    /* ── Wire material factory ───────────────────────────────────────────── */
-    function wMat(col, opacity) {
-      return new THREE.MeshBasicMaterial({
-        color: col || GOLD, wireframe: true, transparent: true, opacity: opacity || 0.09
-      });
-    }
-
-    /* ── Floating wireframe geometries ───────────────────────────────────── */
-    var geoData = [
-      { geo: new THREE.IcosahedronGeometry(7, 1),        x:  30,  y:  12, z: -20, rx: 0.003, ry: 0.005, rz: 0.001, op: 0.10, col: GOLD        },
-      { geo: new THREE.TorusKnotGeometry(4, 1, 80, 10),  x: -28,  y:  -8, z: -16, rx: 0.004, ry: 0.003, rz: 0.002, op: 0.09, col: GOLD        },
-      { geo: new THREE.OctahedronGeometry(4.5),           x: -18,  y:  20, z:  -9, rx: 0.007, ry: 0.005, rz: 0.003, op: 0.14, col: GOLD_BRIGHT },
-      { geo: new THREE.TetrahedronGeometry(3.5),          x:  22,  y: -18, z:  -8, rx: 0.005, ry: 0.008, rz: 0.002, op: 0.12, col: GOLD        },
-      { geo: new THREE.IcosahedronGeometry(2.8, 0),       x:   8,  y: -26, z:  -5, rx: 0.006, ry: 0.004, rz: 0.004, op: 0.11, col: GOLD_BRIGHT },
-      { geo: new THREE.TorusGeometry(5, 1.2, 8, 24),      x: -34,  y:  16, z: -22, rx: 0.002, ry: 0.006, rz: 0.001, op: 0.08, col: GOLD        },
-      { geo: new THREE.DodecahedronGeometry(3.5),          x:  16,  y:  28, z: -18, rx: 0.004, ry: 0.006, rz: 0.002, op: 0.08, col: GOLD_DEEP  },
-      { geo: new THREE.ConeGeometry(3, 7, 6),              x: -12,  y: -30, z: -12, rx: 0.005, ry: 0.004, rz: 0.003, op: 0.09, col: GOLD        },
-      { geo: new THREE.OctahedronGeometry(2.2),            x:  36,  y:  -4, z: -10, rx: 0.008, ry: 0.006, rz: 0.005, op: 0.10, col: GOLD_BRIGHT },
-    ];
-
-    var meshes = geoData.map(function (d) {
-      var m = new THREE.Mesh(d.geo, wMat(d.col, d.op));
-      m.position.set(d.x, d.y, d.z);
-      scene.add(m);
-      return { mesh: m, rx: d.rx, ry: d.ry, rz: d.rz };
-    });
-
-    /* ── Large orbital ring (always visible background) ──────────────────── */
-    var outerRing = new THREE.Mesh(
-      new THREE.TorusGeometry(28, 0.45, 4, 90),
-      new THREE.MeshBasicMaterial({ color: GOLD, transparent: true, opacity: 0.055 })
-    );
-    outerRing.rotation.x = 1.1;
-    outerRing.rotation.z = 0.3;
-    scene.add(outerRing);
-
-    var innerRing = new THREE.Mesh(
-      new THREE.TorusGeometry(16, 0.28, 4, 70),
-      new THREE.MeshBasicMaterial({ color: GOLD_BRIGHT, transparent: true, opacity: 0.045 })
-    );
-    innerRing.rotation.x = -0.6;
-    innerRing.rotation.y = 0.4;
-    scene.add(innerRing);
+    var meshes = [];
 
     /* ── Line connections between nearby particles ───────────────────────── */
     var lineGeo   = new THREE.BufferGeometry();
@@ -128,19 +86,6 @@
     function animate() {
       requestAnimationFrame(animate);
       var t = clock.getElapsedTime();
-
-      /* rotate wireframe shapes */
-      meshes.forEach(function (d) {
-        d.mesh.rotation.x += d.rx;
-        d.mesh.rotation.y += d.ry;
-        d.mesh.rotation.z += d.rz;
-      });
-
-      /* rotate orbital rings */
-      outerRing.rotation.z += 0.0014;
-      outerRing.rotation.y += 0.0006;
-      innerRing.rotation.z -= 0.0018;
-      innerRing.rotation.x += 0.0004;
 
       /* update particle positions & wrap */
       var pa = pGeo.attributes.position.array;
