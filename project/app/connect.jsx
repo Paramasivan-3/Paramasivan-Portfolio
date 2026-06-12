@@ -123,9 +123,9 @@ function Footer() {
         <div className="ft-brand">
           <a href="#home" className="brand" onClick={(e) => go(e, "home")}>
             <span className="brand-mark serif">PV</span>
-            <span className="brand-txt"><strong>Paramasivan&nbsp;V</strong><em>Design · Digital Growth</em></span>
+            <span className="brand-txt"><strong>Paramasivan&nbsp;V</strong><em>Creative & Social Media Design</em></span>
           </a>
-          <p className="ft-tag">Designing creative experiences &amp; driving digital growth for travel brands.</p>
+          <p className="ft-tag">Designing creative visuals &amp; social media content for travel brands.</p>
         </div>
         <nav className="ft-links">
           {D.nav.map((l) => <a key={l.id} href={"#" + l.id} onClick={(e) => go(e, l.id)}>{l.label}</a>)}

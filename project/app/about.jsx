@@ -90,10 +90,10 @@ function CreativeProcess() {
           <span className="eyebrow center">What I Do</span>
         </div>
         <Reveal delay={80} className="proc-sub-text">
-          <p>From concept to delivery — I design creatives, manage social media, and run digital campaigns that help travel brands grow their audience, boost engagement, and generate quality leads.</p>
+          <p>From concept to delivery — I design visual creatives, manage social media content, and build creative campaigns that help travel brands grow their audience, boost engagement, and generate quality leads.</p>
         </Reveal>
         <div className="process-grid">
-          {WHAT_I_DO.map((s, i) => (
+          {WHAT_I_DO.slice(0, 3).map((s, i) => (
             <Reveal key={s.num} delay={i * 90} className="proc-card glass">
               <div className="proc-num serif">{s.num}</div>
               <div className="proc-ico-wrap">
@@ -126,7 +126,7 @@ function About() {
               <div className="id-photo"><img src="assets/profile.jpg" alt="Paramasivan V" /></div>
               <div>
                 <h3 className="id-name">{p.name}</h3>
-                <span className="id-role gold-text">Design & Marketing Executive</span>
+                <span className="id-role gold-text">Creative Design & Social Media Executive</span>
                 <span className="id-loc"><Icon name="pin" size={14} /> {p.location}</span>
               </div>
             </div>
@@ -148,7 +148,7 @@ function About() {
           <SectionHead kicker="About Me"
             title='A creative who thinks in <span class="gold-grad">campaigns</span>, not just posts.' />
           <Reveal delay={120}>
-            <p className="about-lede">Passionate creative professional specializing in social media marketing, content creation, branding, lead generation, and digital growth strategies for travel businesses.</p>
+            <p className="about-lede">Passionate creative professional specializing in visual design, social media content creation, branding, lead generation, and creative design solutions for travel businesses.</p>
           </Reveal>
           <Reveal delay={180}>
             <p className="about-p">Based in Coimbatore and rooted in coastal Thoothukudi, I turn destinations into stories that travel — pairing a designer's eye with a marketer's discipline to build feeds that look premium and actually convert.</p>

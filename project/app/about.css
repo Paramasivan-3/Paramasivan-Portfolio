@@ -245,13 +245,25 @@
 .proc-card {
   padding: 28px 24px 28px; position: relative; overflow: hidden;
   display: flex; flex-direction: column; align-items: flex-start; gap: 0;
+  background: linear-gradient(145deg,
+    rgba(15, 28, 58, 0.90) 0%,
+    rgba(10, 20, 44, 0.94) 100%
+  ) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(34,211,238,0.16) !important;
+  box-shadow:
+    0 8px 32px -10px rgba(0,0,0,0.6),
+    inset 0 1px 0 rgba(255,255,255,0.06) !important;
   transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease), border-color 0.4s var(--ease);
   cursor: default;
 }
 .proc-card:hover {
   transform: translateY(-8px);
-  border-color: rgba(var(--gold-rgb), 0.4);
-  box-shadow: 0 32px 70px -22px rgba(0,0,0,0.65), 0 0 36px -10px rgba(var(--gold-rgb),0.18);
+  border-color: rgba(34,211,238,0.38) !important;
+  box-shadow:
+    0 32px 70px -22px rgba(0,0,0,0.65),
+    0 0 36px -10px rgba(34,211,238,0.18) !important;
 }
 
 .proc-num {
@@ -318,16 +330,37 @@
 .big-skill-card {
   position: relative; overflow: hidden;
   display: flex; align-items: center; justify-content: center;
-  width: clamp(90px, 11vw, 120px); aspect-ratio: 1 / 1;
-  border-radius: 20px; cursor: pointer;
+  width: clamp(100px, 12vw, 130px); aspect-ratio: 1 / 1;
+  border-radius: 24px; cursor: pointer;
+  background: linear-gradient(145deg,
+    rgba(18, 36, 68, 0.95) 0%,
+    rgba(10, 22, 48, 0.97) 55%,
+    rgba(6, 18, 40, 1.0) 100%
+  ) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(34,211,238,0.22) !important;
+  box-shadow:
+    0 0 0 1px rgba(34,211,238,0.08),
+    0 12px 40px -12px rgba(0,0,0,0.7),
+    0 0 24px -8px rgba(34,211,238,0.18),
+    inset 0 1px 0 rgba(255,255,255,0.08) !important;
   animation: skill-float 3.4s ease-in-out infinite;
   animation-delay: var(--float-delay, 0s);
-  transition: box-shadow 0.5s var(--ease), border-color 0.4s var(--ease);
+  transition: box-shadow 0.4s var(--ease), border-color 0.4s var(--ease), transform 0.4s var(--ease);
+}
+.big-skill-card::before {
+  background: linear-gradient(145deg, rgba(255,255,255,0.06), transparent 45%) !important;
 }
 .big-skill-card:hover {
   animation-play-state: paused;
-  box-shadow: 0 24px 60px -18px rgba(0,0,0,0.7), 0 0 36px -10px color-mix(in srgb, var(--sc) 35%, transparent);
-  border-color: color-mix(in srgb, var(--sc) 55%, transparent);
+  transform: translateY(-8px) scale(1.04);
+  border-color: color-mix(in srgb, var(--sc) 70%, transparent) !important;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--sc) 40%, transparent),
+    0 28px 60px -16px rgba(0,0,0,0.75),
+    0 0 40px -8px color-mix(in srgb, var(--sc) 40%, transparent),
+    inset 0 1px 0 rgba(255,255,255,0.12) !important;
 }
 
 .big-skill-glow {

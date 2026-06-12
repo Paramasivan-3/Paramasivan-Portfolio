@@ -536,7 +536,7 @@ function Work() {
       <div className="wrap">
         <SectionHead center kicker="Creative Showcase"
           title={'Selected <span class="gold-grad">Creative Works</span>'}
-          sub="Festival campaigns, travel promotions, lead-gen creatives and digital content — built for a growing travel brand." />
+          sub="Festival campaigns, travel promotions, lead-gen creatives and social media content — built for a growing travel brand." />
 
         {!loaded && (
           <div className="pf-skeleton-grid">

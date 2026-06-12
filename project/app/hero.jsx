@@ -69,7 +69,7 @@ function HeroText({ compact }) {
       <Reveal>
         <div className="hero-badge glass">
           <span className="hero-badge-dot" />
-          <span>Creative Designer · Digital Marketing Specialist</span>
+          <span>Creative Visual Designer · Social Media Content Specialist</span>
         </div>
       </Reveal>
       <Reveal delay={90} as="h1" className="hero-h1">
@@ -78,8 +78,8 @@ function HeroText({ compact }) {
       </Reveal>
       <Reveal delay={170}>
         <p className="hero-intro">
-          I help businesses build a stronger digital presence through creative design,
-          performance marketing, content strategy, and lead generation.
+          I help businesses build a stronger social media presence through creative visual design,
+          content strategy, brand storytelling, and lead generation.
         </p>
       </Reveal>
       <Reveal delay={240}><HeroCTAs /></Reveal>
@@ -113,7 +113,7 @@ function Portrait({ className = "", badge = true }) {
           </div>
           <div className="float-chip chip-d glass">
             <Icon name="rocket" size={13} style={{ color: "var(--gold)" }} />
-            <span style={{ color: "var(--gold)" }}>Digital Marketing</span>
+            <span style={{ color: "var(--gold)" }}>Social Media Design</span>
           </div>
         </>
       )}

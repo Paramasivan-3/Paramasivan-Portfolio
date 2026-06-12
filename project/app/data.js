@@ -2,7 +2,7 @@
 window.DATA = {
   person: {
     name: "Paramasivan",
-    roles: ["Design Executive", "Social Media & Digital Marketing Executive"],
+    roles: ["Creative Design Executive", "Social Media Content Design Executive"],
     phone: "+91 9345623594",
     phoneRaw: "919345623594",
     email: "ranjithparamasiva0707@gmail.com",
@@ -23,7 +23,7 @@ window.DATA = {
   ],
 
   timeline: [
-    { year: "2025 — Present", role: "Design & Digital Marketing Executive", org: "Adventure Holidays", note: "Driving social media, creative design and lead generation for a growing travel brand." },
+    { year: "2025 — Present", role: "Creative Design & Social Media Executive", org: "Adventure Holidays", note: "Crafting visual creatives, social media content, and lead generation assets for a growing travel brand." },
     { year: "2025", role: "Creative & Content Foundations", org: "Travel & Tourism", note: "Built a system for festival creatives, destination promotions and weekly content planning." },
     { year: "Origins", role: "From Thoothukudi to Coimbatore", org: "Tamil Nadu", note: "A coastal upbringing that turned into a love for telling places' stories visually." },
   ],
@@ -32,8 +32,8 @@ window.DATA = {
     { title: "Design", icon: "pen", skills: [
       "Adobe Photoshop", "Adobe Illustrator", "Figma", "Canva",
     ]},
-    { title: "Digital Marketing", icon: "rocket", skills: [
-      "Social Media Marketing", "Meta Ads", "Google Ads", "SEO",
+    { title: "Social Media Design", icon: "rocket", skills: [
+      "Social Media Content Design", "Meta Ads", "Google Ads", "SEO",
       "Lead Generation", "Campaign Management",
     ]},
     { title: "Website & Content", icon: "globe", skills: [

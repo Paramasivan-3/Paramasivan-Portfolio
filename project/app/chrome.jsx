@@ -1,5 +1,17 @@
 /* Chrome: Loader, ScrollProgress, Navbar, ThemeToggle, FloatDock → window */
 
+function PLogoImg({ size = 40 }) {
+  return (
+    <img
+      src="/assets/logo.png"
+      alt="Paramasivan Logo"
+      width={size}
+      height={size}
+      style={{ display: "block", width: size, height: size, objectFit: "contain" }}
+    />
+  );
+}
+
 function Loader() {
   const [gone, setGone] = useState(false);
   const [hide, setHide] = useState(false);
@@ -15,10 +27,10 @@ function Loader() {
         <svg viewBox="0 0 120 120" width="92" height="92">
           <circle className="loader-ring" cx="60" cy="60" r="54" />
         </svg>
-        <span className="serif loader-mono">PV</span>
+        <PLogoImg size={48} />
       </div>
       <div className="loader-name">PARAMASIVAN&nbsp;V</div>
-      <div className="loader-sub">Design · Social · Digital Growth</div>
+      <div className="loader-sub">Creative Design · Social Media Content</div>
     </div>
   );
 }
@@ -83,10 +95,10 @@ function Navbar({ theme, setTheme }) {
     <header className={"nav" + (scrolled ? " on" : "")}>
       <div className="nav-inner wrap">
         <a href="#home" className="brand" onClick={(e) => go(e, "home")}>
-          <span className="brand-mark serif">PV</span>
+          <span className="brand-mark brand-mark--logo"><PLogoImg size={58} /></span>
           <span className="brand-txt">
             <strong>Paramasivan&nbsp;V</strong>
-            <em>Design · Digital Growth</em>
+            <em>Creative & Social Media Design</em>
           </span>
         </a>
 
