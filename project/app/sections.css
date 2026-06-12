@@ -1,0 +1,219 @@
+/* =========================================================================
+   Section + component styles
+   ========================================================================= */
+
+/* ---- Loader ------------------------------------------------------------ */
+.loader {
+  position: fixed; inset: 0; z-index: 200; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 22px; background: var(--bg);
+  transition: opacity 0.7s var(--ease), visibility 0.7s;
+}
+.loader.out { opacity: 0; visibility: hidden; }
+.loader-mark { position: relative; width: 92px; height: 92px; display: grid; place-items: center; }
+.loader-ring {
+  fill: none; stroke: var(--gold); stroke-width: 2.5; stroke-linecap: round;
+  stroke-dasharray: 339; stroke-dashoffset: 339; transform: rotate(-90deg); transform-origin: center;
+  animation: loaderDraw 1.6s var(--ease) forwards;
+}
+@keyframes loaderDraw { to { stroke-dashoffset: 40; } }
+.loader-mono { position: absolute; font-size: 30px; font-weight: 600; color: var(--gold); letter-spacing: 0.04em; }
+.loader-name { font-family: var(--sans); font-weight: 800; letter-spacing: 0.42em; font-size: 13px; color: var(--ink); padding-left: 0.42em; }
+.loader-sub { font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--ink-mut); }
+
+/* ---- Scroll progress --------------------------------------------------- */
+.scroll-prog {
+  position: fixed; top: 0; left: 0; height: 3px; z-index: 120;
+  background: linear-gradient(90deg, var(--gold-deep), var(--gold-bright));
+  box-shadow: 0 0 12px rgba(var(--gold-rgb), 0.6); transition: width 0.08s linear;
+}
+
+/* ---- Navbar ------------------------------------------------------------ */
+.nav { position: fixed; top: 0; left: 0; right: 0; z-index: 110; transition: all 0.45s var(--ease); }
+.nav.on { background: color-mix(in srgb, var(--bg) 78%, transparent); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border-bottom: 1px solid var(--hairline); }
+.nav-inner { display: flex; align-items: center; justify-content: space-between; height: 74px; }
+.brand { display: flex; align-items: center; gap: 13px; text-decoration: none; color: var(--ink); }
+.brand-mark {
+  width: 44px; height: 44px; display: grid; place-items: center; font-size: 21px; font-weight: 600;
+  color: var(--gold); border: 1px solid var(--gold-line); border-radius: 12px;
+  background: var(--surface); letter-spacing: 0.02em;
+}
+.brand-txt { display: flex; flex-direction: column; line-height: 1.2; }
+.brand-txt strong { font-family: var(--sans); font-weight: 800; font-size: 15px; letter-spacing: 0.01em; }
+.brand-txt em { font-style: normal; font-size: 11px; color: var(--ink-mut); letter-spacing: 0.06em; }
+
+.nav-links { display: flex; align-items: center; gap: 4px; }
+.nav-links > a:not(.btn) {
+  font-family: var(--sans); font-weight: 600; font-size: 14.5px; color: var(--ink-soft);
+  text-decoration: none; padding: 9px 14px; border-radius: 999px; position: relative; transition: color 0.3s var(--ease);
+}
+.nav-links > a:not(.btn):hover { color: var(--ink); }
+.nav-links > a.active { color: var(--gold); }
+.nav-links > a.active::after {
+  content: ""; position: absolute; left: 14px; right: 14px; bottom: 2px; height: 2px;
+  background: var(--gold); border-radius: 2px;
+}
+.nav-cta-m { display: none; }
+.nav-right { display: flex; align-items: center; gap: 14px; }
+
+.theme-tog {
+  width: 56px; height: 30px; border-radius: 999px; border: 1px solid var(--hairline);
+  background: var(--surface); cursor: pointer; position: relative; padding: 0; flex: none;
+}
+.theme-knob {
+  position: absolute; top: 2px; left: 2px; width: 24px; height: 24px; border-radius: 50%;
+  background: linear-gradient(105deg, var(--gold-bright), var(--gold)); color: #160f02;
+  display: grid; place-items: center; transition: transform 0.4s var(--ease);
+}
+.theme-knob svg:last-child { display: none; }
+.theme-knob[data-theme-state="dark"] { transform: translateX(26px); }
+.theme-knob[data-theme-state="dark"] svg:first-child { display: none; }
+.theme-knob[data-theme-state="dark"] svg:last-child { display: block; }
+
+.nav-burger { display: none; background: none; border: none; color: var(--ink); cursor: pointer; padding: 6px; }
+
+@media (max-width: 1040px) {
+  .nav-cta { display: none; }
+  .nav-cta-m { display: inline-flex; margin-top: 8px; }
+  .nav-burger { display: inline-flex; }
+  .nav-links {
+    position: fixed; top: 74px; right: 0; width: min(320px, 84vw); height: calc(100vh - 74px);
+    flex-direction: column; align-items: stretch; gap: 2px; padding: 22px;
+    background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(22px);
+    border-left: 1px solid var(--hairline); transform: translateX(110%); transition: transform 0.45s var(--ease);
+  }
+  .nav-links.open { transform: none; }
+  .nav-links > a:not(.btn) { padding: 14px 16px; font-size: 16px; }
+  .nav-links > a.active::after { display: none; }
+}
+
+/* ---- Stat (counter) ---------------------------------------------------- */
+.stat-num { font-size: clamp(34px, 4.6vw, 52px); font-weight: 600; line-height: 1; letter-spacing: -0.02em; display: inline-flex; align-items: baseline; }
+.stat-suf { margin-left: 2px; }
+.stat-lab { font-family: var(--sans); font-size: 13px; color: var(--ink-mut); margin-top: 10px; letter-spacing: 0.02em; }
+
+/* ---- Float dock -------------------------------------------------------- */
+.dock { position: fixed; right: 22px; bottom: 22px; z-index: 100; display: flex; flex-direction: column; gap: 12px; opacity: 0; transform: translateY(18px); pointer-events: none; transition: all 0.4s var(--ease); }
+.dock.show { opacity: 1; transform: none; pointer-events: auto; }
+.dock-btn { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; cursor: pointer; border: none; transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease); }
+.dock-btn:hover { transform: translateY(-3px) scale(1.04); }
+.dock-btn.wa { background: linear-gradient(105deg, var(--gold-bright), var(--gold)); color: #160f02; box-shadow: 0 14px 30px -10px rgba(var(--gold-rgb),0.6); }
+.dock-btn.top { background: var(--surface-2); color: var(--gold); border: 1px solid var(--gold-line); backdrop-filter: blur(12px); }
+@media (max-width: 600px) { .dock { right: 16px; bottom: 16px; } .dock-btn { width: 48px; height: 48px; } }
+
+/* =========================================================================
+   Sections — 3D loader, navbar depth, dock glow
+   ========================================================================= */
+
+/* ── Loader — 3D spinning ring + depth ───────────────────────────────── */
+.loader {
+  background: radial-gradient(ellipse at 50% 50%, var(--bg-2) 0%, var(--bg) 70%);
+}
+.loader-mark {
+  animation: loader-3d-spin 2.4s var(--ease) both;
+  transform-style: preserve-3d;
+}
+@keyframes loader-3d-spin {
+  from { opacity: 0; transform: rotateY(-90deg) scale(0.6); }
+  to   { opacity: 1; transform: rotateY(0deg)   scale(1);   }
+}
+.loader-ring {
+  filter: drop-shadow(0 0 6px rgba(var(--gold-rgb),0.7))
+          drop-shadow(0 0 20px rgba(var(--gold-rgb),0.35));
+}
+.loader-mono {
+  text-shadow: 0 0 16px rgba(var(--gold-rgb),0.8),
+               0 0 40px rgba(var(--gold-rgb),0.4);
+  animation: mono-glow 1.4s ease-in-out infinite alternate;
+  animation-delay: 0.4s;
+}
+@keyframes mono-glow {
+  from { text-shadow: 0 0 8px rgba(var(--gold-rgb),0.5);  }
+  to   { text-shadow: 0 0 20px rgba(var(--gold-rgb),0.9), 0 0 50px rgba(var(--gold-rgb),0.4); }
+}
+.loader-name {
+  animation: name-rise 0.8s var(--ease) both;
+  animation-delay: 0.6s;
+  letter-spacing: 0.6em;
+}
+@keyframes name-rise {
+  from { opacity: 0; transform: translateY(14px) letterSpacing(0.2em); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Scroll progress — gold shimmer bar ──────────────────────────────── */
+.scroll-prog {
+  height: 3px;
+  background: linear-gradient(90deg,
+    var(--gold-deep) 0%,
+    var(--gold) 35%,
+    var(--gold-bright) 65%,
+    var(--gold) 100%);
+  background-size: 200% 100%;
+  animation: prog-shimmer 2.2s linear infinite;
+}
+@keyframes prog-shimmer {
+  from { background-position: 200% 0; }
+  to   { background-position: 0% 0; }
+}
+
+/* ── Navbar — glass depth when scrolled ──────────────────────────────── */
+.nav.on {
+  box-shadow:
+    0 1px 0 var(--hairline),
+    0 20px 60px -20px rgba(0,0,0,0.7),
+    0 0 40px -12px rgba(var(--gold-rgb),0.08);
+}
+.brand-mark {
+  box-shadow:
+    0 0 0 1px var(--gold-line),
+    0 0 16px -4px rgba(var(--gold-rgb),0.4),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+  transition: box-shadow 0.4s var(--ease), transform 0.4s var(--ease);
+}
+.brand-mark:hover,
+.brand:hover .brand-mark {
+  box-shadow:
+    0 0 0 1px rgba(var(--gold-rgb),0.55),
+    0 0 24px -4px rgba(var(--gold-rgb),0.6),
+    inset 0 1px 0 rgba(255,255,255,0.1);
+  transform: rotateY(12deg) scale(1.06);
+}
+
+/* active nav link glow */
+.nav-links > a.active {
+  text-shadow: 0 0 16px rgba(var(--gold-rgb),0.5);
+}
+.nav-links > a.active::after {
+  box-shadow: 0 0 8px rgba(var(--gold-rgb),0.7);
+}
+
+/* ── Theme toggle — gold knob glow ──────────────────────────────────── */
+.theme-knob {
+  box-shadow: 0 0 10px rgba(var(--gold-rgb),0.5),
+              0 0 22px rgba(var(--gold-rgb),0.2);
+}
+
+/* ── Stat — accent numbers ────────────────────────────────────────────── */
+.stat-num {
+  color: var(--gold-bright);
+  filter: drop-shadow(0 0 8px rgba(var(--gold-rgb), 0.5));
+}
+.stat-lab {
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+
+/* ── Float dock — gold glow ──────────────────────────────────────────── */
+.dock-btn.wa {
+  box-shadow:
+    0 14px 30px -10px rgba(var(--gold-rgb),0.65),
+    0 0 18px -6px rgba(var(--gold-rgb),0.45);
+  animation: neon-pulse-anim 3s ease-in-out infinite;
+}
+.dock-btn:hover {
+  transform: translateY(-5px) scale(1.08);
+  box-shadow:
+    0 20px 40px -12px rgba(var(--gold-rgb),0.75),
+    0 0 28px -8px rgba(var(--gold-rgb),0.5);
+}

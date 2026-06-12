@@ -1,0 +1,773 @@
+/* =========================================================================
+   Services + Portfolio — work.css
+   ========================================================================= */
+
+/* ---- Services ---------------------------------------------------------- */
+.services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(18px, 2.2vw, 26px); }
+.svc-card { padding: 34px 30px 30px; position: relative; overflow: hidden; }
+.svc-card:hover { transform: translateY(-8px); }
+.svc-num { position: absolute; top: 18px; right: 24px; font-size: 46px; font-weight: 600; color: var(--ink); opacity: 0.07; line-height: 1; }
+.svc-ico { width: 56px; height: 56px; border-radius: 15px; display: grid; place-items: center; color: var(--gold); background: rgba(var(--gold-rgb),0.1); border: 1px solid var(--gold-line); margin-bottom: 22px; transition: all 0.45s var(--ease); }
+.svc-card:hover .svc-ico { background: linear-gradient(105deg, var(--gold-bright), var(--gold)); color: #160f02; transform: rotate(-6deg); }
+.svc-card h3 { font-size: 25px; margin-bottom: 10px; }
+.svc-card p { color: var(--ink-soft); font-size: 15.5px; line-height: 1.65; max-width: 38ch; }
+.svc-arrow { position: absolute; bottom: 26px; right: 26px; color: var(--ink-mut); opacity: 0; transform: translate(-6px, 6px); transition: all 0.45s var(--ease); }
+.svc-card:hover .svc-arrow { opacity: 1; transform: none; color: var(--gold); }
+@media (max-width: 900px) { .services-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .services-grid { grid-template-columns: 1fr; } }
+
+/* =========================================================================
+   Portfolio Section
+   ========================================================================= */
+.work { position: relative; }
+
+/* ── Ambient background glows ─────────────────────────────────────────── */
+.pf-bg-accent {
+  position: absolute; pointer-events: none; z-index: 0;
+  top: 5%; left: -8%;
+  width: 44vw; height: 44vw; max-width: 560px; max-height: 560px;
+  background: radial-gradient(ellipse, rgba(var(--gold-rgb), 0.09), transparent 65%);
+  filter: blur(60px);
+}
+.pf-bg-accent-2 {
+  top: auto; bottom: 0; left: auto; right: -6%;
+  width: 38vw; height: 38vw; max-width: 460px; max-height: 460px;
+  background: radial-gradient(ellipse, rgba(var(--gold-rgb), 0.07), transparent 65%);
+}
+
+/* ── Filter bar ───────────────────────────────────────────────────────── */
+.filter-bar { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 38px; }
+.pf-filter-bar { justify-content: center; margin-bottom: 52px; }
+
+.chip {
+  font-family: var(--sans); font-weight: 600; font-size: 13px; padding: 10px 20px;
+  border-radius: 999px; border: 1px solid var(--hairline); background: var(--surface);
+  color: var(--ink-soft); cursor: pointer; transition: all 0.35s var(--ease);
+  backdrop-filter: blur(8px); position: relative; overflow: hidden;
+}
+.chip::before {
+  content: ""; position: absolute; inset: 0; border-radius: 999px;
+  background: linear-gradient(105deg, rgba(var(--gold-rgb),0.14), transparent);
+  opacity: 0; transition: opacity 0.3s var(--ease);
+}
+.chip:hover { color: var(--ink); border-color: var(--gold-line); }
+.chip:hover::before { opacity: 1; }
+.chip.on {
+  color: #160f02; background: linear-gradient(105deg, var(--gold-bright), var(--gold));
+  border-color: transparent;
+  box-shadow: 0 10px 28px -12px rgba(var(--gold-rgb), 0.65);
+}
+.chip.on::before { display: none; }
+
+/* ── Uniform grid ─────────────────────────────────────────────────────── */
+.pf-masonry {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 22px; position: relative; z-index: 1;
+  transition: opacity 0.26s ease;
+}
+.pf-masonry.fading { opacity: 0; pointer-events: none; }
+
+/* Cards always visible — CSS animation on first paint, never resets */
+@keyframes pf-card-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: none; }
+}
+.pf-cell {
+  display: block;
+  /* animation-fill-mode: both → card starts invisible during delay,
+     stays fully visible after animation ends — independent of any
+     IntersectionObserver or React state */
+  animation: pf-card-in 0.55s cubic-bezier(0.25, 1, 0.5, 1) both;
+}
+
+/* ── Portfolio card ───────────────────────────────────────────────────── */
+.pf-card {
+  overflow: hidden; border-radius: 18px;
+  /* force pointer cursor + events regardless of parent cursor:none or 3D stacking */
+  cursor: pointer !important; pointer-events: auto !important;
+  transition: transform 0.45s var(--ease), box-shadow 0.45s var(--ease), border-color 0.45s var(--ease);
+  display: flex; flex-direction: column;
+}
+.pf-card:hover {
+  transform: translateY(-10px) scale(1.015);
+  box-shadow: 0 32px 70px -22px rgba(0, 0, 0, 0.65), 0 0 0 1px var(--gold-line);
+}
+
+/* Thumbnail — fixed aspect ratio so all cards are identical height */
+.pf-thumb {
+  position: relative; overflow: hidden; flex-shrink: 0;
+  background: var(--bg-2); aspect-ratio: 4/3;
+}
+.pf-img {
+  width: 100%; height: 100%; display: block; object-fit: cover;
+  transition: transform 0.6s var(--ease);
+}
+.pf-card:hover .pf-img { transform: scale(1.07); }
+
+/* Placeholder inside thumb — no text, just texture */
+.pf-ph {
+  position: absolute; inset: 0;
+  background: var(--bg-2);
+  background-image:
+    repeating-linear-gradient(135deg, rgba(var(--gold-rgb),0.04) 0 1px, transparent 1px 16px);
+}
+
+/* Category badge */
+.pf-badge {
+  position: absolute; top: 14px; left: 14px; z-index: 2;
+  padding: 5px 13px; border-radius: 999px;
+  font-family: var(--sans); font-size: 10.5px; font-weight: 700;
+  letter-spacing: 0.09em; text-transform: uppercase;
+  color: var(--cc, var(--gold));
+  background: color-mix(in srgb, var(--cc, var(--gold)) 16%, var(--bg));
+  border: 1px solid color-mix(in srgb, var(--cc, var(--gold)) 38%, transparent);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+}
+
+/* Hover overlay */
+.pf-hover-overlay {
+  position: absolute; inset: 0; z-index: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+  background: linear-gradient(0deg, rgba(var(--gold-rgb),0.82) 0%, rgba(var(--gold-rgb),0.42) 55%, transparent 100%);
+  opacity: 0; transition: opacity 0.4s var(--ease);
+}
+.pf-card:hover .pf-hover-overlay { opacity: 1; }
+
+
+/* Card footer */
+.pf-footer {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 12px; padding: 16px 18px 18px;
+}
+.pf-footer-main { flex: 1; min-width: 0; }
+.pf-title { font-size: 15.5px; font-weight: 700; margin: 0 0 10px; line-height: 1.3; }
+.pf-tools { display: flex; flex-wrap: wrap; gap: 6px; }
+.tool {
+  font-family: var(--sans); font-size: 11px; font-weight: 600;
+  color: var(--ink-mut); padding: 4px 10px; border-radius: 999px;
+  border: 1px solid var(--hairline); background: var(--surface);
+}
+
+/* Behance icon button (separate from "View Project") */
+.pf-behance-ico {
+  flex-shrink: 0; width: 36px; height: 36px; border-radius: 10px;
+  display: grid; place-items: center;
+  color: var(--ink-mut); text-decoration: none;
+  transition: all 0.35s var(--ease); margin-top: 2px;
+}
+.pf-behance-ico:hover {
+  color: var(--gold);
+  border-color: rgba(var(--gold-rgb), 0.35) !important;
+  background: rgba(var(--gold-rgb), 0.1) !important;
+  transform: scale(1.1);
+}
+
+/* Empty state */
+.pf-empty {
+  column-span: all; padding: 80px 20px;
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+  color: var(--ink-mut); font-family: var(--sans); font-size: 15px; text-align: center;
+}
+
+/* Loading skeleton */
+.pf-skeleton-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; position: relative; z-index: 1; }
+.pf-skeleton-card {
+  border-radius: 18px; background: var(--surface);
+  border: 1px solid var(--hairline); height: 300px;
+  animation: skeleton-shimmer 1.8s ease-in-out infinite;
+}
+@keyframes skeleton-shimmer {
+  0%, 100% { opacity: 0.45; }
+  50%       { opacity: 0.85; }
+}
+
+/* Section footer */
+.work-foot { text-align: center; margin-top: 60px; }
+.pf-foot-note { color: var(--ink-mut); font-size: 14px; margin-bottom: 18px; }
+
+.pf-showmore-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--sans); font-size: 15px; font-weight: 700;
+  padding: 14px 32px; border-radius: 14px;
+  border: 1.5px solid var(--gold-line);
+  color: var(--ink); background: var(--surface);
+  text-decoration: none; cursor: pointer;
+  transition: all 0.4s var(--ease);
+  backdrop-filter: blur(10px);
+}
+.pf-showmore-btn:hover {
+  background: linear-gradient(105deg, rgba(var(--gold-rgb),0.15), rgba(var(--gold-rgb),0.05));
+  border-color: rgba(var(--gold-rgb), 0.5);
+  color: var(--gold);
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px -12px rgba(var(--gold-rgb), 0.35);
+}
+
+/* =========================================================================
+   Project Viewer Modal
+   ========================================================================= */
+.pv-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  width: 100vw; height: 100vh;
+  z-index: 100000;
+  /* Semi-transparent: page remains visible behind the modal, no scroll freeze */
+  background: rgba(4, 10, 24, 0.72);
+  backdrop-filter: blur(6px) saturate(0.8);
+  -webkit-backdrop-filter: blur(6px) saturate(0.8);
+  display: flex; align-items: center; justify-content: center;
+  padding: clamp(16px, 3vw, 32px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  animation: pv-fade-in 0.24s var(--ease) forwards;
+}
+.pv-overlay.closing { animation: pv-fade-out 0.24s var(--ease) forwards; pointer-events: none; }
+@keyframes pv-fade-in  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pv-fade-out { from { opacity: 1; } to { opacity: 0; } }
+
+.pv-modal {
+  display: grid; grid-template-columns: 1fr 380px;
+  width: 100%; max-width: 1160px; max-height: 90vh;
+  border-radius: 24px; overflow: hidden; position: relative;
+  background: var(--bg-2); border: 1px solid var(--hairline);
+  box-shadow: 0 60px 140px -40px rgba(0,0,0,0.9);
+  animation: pv-modal-in 0.38s var(--ease) forwards;
+}
+.pv-overlay.closing .pv-modal { animation: pv-modal-out 0.28s var(--ease) forwards; }
+@keyframes pv-modal-in  { from { opacity: 0; transform: scale(0.94) translateY(22px); } to { opacity: 1; transform: none; } }
+@keyframes pv-modal-out { from { opacity: 1; transform: none; } to { opacity: 0; transform: scale(0.96) translateY(10px); } }
+
+/* Close button */
+.pv-close {
+  position: absolute; top: 18px; right: 18px; z-index: 20;
+  width: 42px; height: 42px; border-radius: 50%;
+  display: grid; place-items: center; cursor: pointer;
+  color: var(--ink); border: none;
+  transition: transform 0.35s var(--ease), color 0.25s, background 0.25s;
+}
+.pv-close:hover { color: var(--gold); transform: rotate(90deg) scale(1.1); }
+
+/* Image panel */
+.pv-img-panel {
+  position: relative; overflow: hidden;
+  background: var(--bg); display: flex; align-items: center; justify-content: center;
+  min-height: 400px;
+}
+.pv-img-skeleton {
+  position: absolute; inset: 0;
+  background: var(--surface);
+  animation: skeleton-shimmer 1.8s ease-in-out infinite;
+}
+.pv-img {
+  width: 100%; height: 100%; object-fit: contain;
+  max-height: 90vh; display: block;
+  opacity: 0; transition: opacity 0.4s, transform 0.5s var(--ease);
+}
+.pv-img.loaded { opacity: 1; }
+.pv-img.zoomed { transform: scale(2); cursor: zoom-out; }
+.pv-img-ph { width: 100%; height: 100%; min-height: 400px; }
+
+/* Zoom pill hint */
+.pv-zoom-pill {
+  position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--sans); font-size: 11px; color: var(--ink-mut);
+  background: color-mix(in srgb, var(--bg) 80%, transparent);
+  backdrop-filter: blur(10px); padding: 5px 14px; border-radius: 999px;
+  border: 1px solid var(--hairline); white-space: nowrap; pointer-events: none;
+}
+
+/* Navigation arrows on image */
+.pv-arrow {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 46px; height: 46px; border-radius: 50%; border: none;
+  display: grid; place-items: center; cursor: pointer; color: var(--ink);
+  transition: all 0.3s var(--ease); opacity: 0.7; z-index: 5;
+}
+.pv-arrow:hover { opacity: 1; color: var(--gold); transform: translateY(-50%) scale(1.08); }
+.pv-arrow-l { left: 14px; }
+.pv-arrow-r { right: 14px; }
+
+/* Detail panel */
+.pv-detail-panel {
+  display: flex; flex-direction: column;
+  border-left: 1px solid var(--hairline);
+  max-height: 90vh; overflow: hidden;
+}
+.pv-detail-scroll {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  padding: 36px 30px 24px;
+  display: flex; flex-direction: column; gap: 20px;
+  scrollbar-width: thin; scrollbar-color: var(--hairline) transparent;
+}
+.pv-detail-scroll::-webkit-scrollbar { width: 4px; }
+.pv-detail-scroll::-webkit-scrollbar-thumb { background: var(--hairline); border-radius: 2px; }
+
+/* Category label */
+.pv-cat {
+  display: inline-flex; align-items: center; gap: 7px; width: fit-content;
+  padding: 5px 14px; border-radius: 999px; font-family: var(--sans);
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--cc, var(--gold));
+  background: color-mix(in srgb, var(--cc, var(--gold)) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--cc, var(--gold)) 32%, transparent);
+}
+
+.pv-title { font-size: clamp(20px, 2.4vw, 27px); font-weight: 700; line-height: 1.2; margin: 0; }
+.pv-desc  { color: var(--ink-soft); font-size: 14.5px; line-height: 1.72; margin: 0; }
+
+.pv-section { display: flex; flex-direction: column; gap: 8px; }
+.pv-section-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+}
+.pv-section-label {
+  font-family: var(--sans); font-size: 10.5px; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-mut);
+}
+.pv-section-hint {
+  font-weight: 400; letter-spacing: 0; text-transform: none; font-size: 9.5px; opacity: .7;
+}
+.pv-section-val { font-family: var(--sans); font-size: 14.5px; color: var(--ink-soft); }
+.pv-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+/* Tools edit toggle */
+.pv-tools-edit-toggle {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; border-radius: 6px; border: 1px solid var(--hairline);
+  background: transparent; color: var(--ink-mut);
+  font-family: var(--sans); font-size: 11px; font-weight: 600;
+  cursor: pointer; transition: all .2s; flex-shrink: 0;
+}
+.pv-tools-edit-toggle:hover, .pv-tools-edit-toggle.on {
+  border-color: var(--gold); color: var(--gold);
+  background: color-mix(in srgb, var(--gold) 10%, transparent);
+}
+
+/* Tool chip in edit mode */
+.tool-editable {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding-right: 6px !important;
+  border-color: color-mix(in srgb, var(--gold) 40%, transparent) !important;
+}
+.tool-remove-btn {
+  background: none; border: none; cursor: pointer;
+  color: #ff7070; font-size: 14px; font-weight: 700; line-height: 1;
+  padding: 0 2px; transition: color .15s;
+}
+.tool-remove-btn:hover { color: #ff4444; }
+
+/* Tool adder */
+.tool-adder { position: relative; }
+.tool-add-btn {
+  display: inline-flex; align-items: center;
+  padding: 5px 12px; border-radius: 8px; border: 1.5px dashed var(--gold-line);
+  background: color-mix(in srgb, var(--gold) 8%, transparent);
+  color: var(--gold); font-family: var(--sans); font-size: 12px; font-weight: 700;
+  cursor: pointer; transition: all .2s; white-space: nowrap;
+}
+.tool-add-btn:hover { background: color-mix(in srgb, var(--gold) 18%, transparent); }
+.tool-dropdown {
+  position: absolute; bottom: calc(100% + 6px); left: 0; z-index: 20;
+  background: var(--bg); border: 1px solid var(--hairline);
+  border-radius: 10px; padding: 6px; min-width: 160px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.4);
+  display: flex; flex-direction: column; gap: 2px;
+  max-height: 220px; overflow-y: auto;
+}
+.tool-dropdown-item {
+  padding: 7px 12px; border-radius: 7px; border: none;
+  background: transparent; color: var(--ink-soft);
+  font-family: var(--sans); font-size: 13px; font-weight: 500;
+  cursor: pointer; text-align: left; transition: all .15s;
+}
+.tool-dropdown-item:hover { background: var(--surface); color: var(--gold); }
+
+/* Remove current image button (floating, top-left of image panel) */
+.pv-remove-img-btn {
+  position: absolute; top: 12px; left: 12px; z-index: 8;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: 8px;
+  border: 1px solid rgba(255,80,80,.5);
+  background: color-mix(in srgb, #ff4444 70%, transparent);
+  color: #fff; font-family: var(--sans); font-size: 12px; font-weight: 600;
+  cursor: pointer; backdrop-filter: blur(10px);
+  transition: background .2s, transform .15s;
+}
+.pv-remove-img-btn:hover {
+  background: color-mix(in srgb, #ff3333 90%, transparent);
+  transform: scale(1.04);
+}
+
+.pv-cta-row { margin-top: 4px; }
+.pv-behance-btn { width: 100%; justify-content: center; }
+
+/* Slide dots */
+.pv-dots {
+  position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 7px; z-index: 6;
+}
+.pv-dot {
+  width: 7px; height: 7px; border-radius: 50%; border: none; cursor: pointer;
+  background: rgba(255,255,255,0.35); transition: all 0.25s var(--ease);
+  padding: 0;
+}
+.pv-dot.on { background: var(--gold); width: 20px; border-radius: 4px; }
+
+/* Thumbnail strip in detail panel */
+.pv-thumb-strip {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px;
+}
+.pv-thumb-btn {
+  width: 56px; height: 42px; border-radius: 8px; overflow: hidden; padding: 0;
+  border: 2px solid transparent; cursor: pointer; background: var(--bg-2);
+  transition: border-color 0.25s var(--ease), transform 0.25s var(--ease);
+  flex-shrink: 0;
+}
+.pv-thumb-btn img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pv-thumb-btn.on { border-color: var(--gold); transform: scale(1.06); }
+.pv-thumb-btn:hover { border-color: var(--gold-line); }
+
+/* Prev / Next strip at bottom */
+/* ── Modal: Add / Delete action row ──────────────────────────────── */
+.pv-action-row {
+  display: flex; gap: 10px;
+  padding: 14px 24px; border-top: 1px solid var(--hairline); flex-shrink: 0;
+}
+.pv-action-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  flex: 1; justify-content: center;
+  padding: 10px 14px; border-radius: 10px; border: 1.5px solid;
+  font-family: var(--sans); font-size: 12.5px; font-weight: 700;
+  cursor: pointer; transition: all .2s; white-space: nowrap;
+}
+.pv-action-plus { font-size: 17px; font-weight: 800; line-height: 1; }
+.pv-action-add {
+  border-color: var(--gold);
+  background: color-mix(in srgb, var(--gold) 10%, transparent);
+  color: var(--gold);
+}
+.pv-action-add:hover {
+  background: color-mix(in srgb, var(--gold) 22%, transparent);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--gold) 28%, transparent);
+}
+.pv-action-edit {
+  border-color: rgba(6, 182, 212, 0.55);
+  background: color-mix(in srgb, #06B6D4 10%, transparent);
+  color: #06B6D4;
+}
+.pv-action-edit:hover {
+  background: color-mix(in srgb, #06B6D4 22%, transparent);
+  box-shadow: 0 0 14px color-mix(in srgb, #06B6D4 25%, transparent);
+}
+.pv-action-del {
+  border-color: rgba(255, 80, 80, .55);
+  background: color-mix(in srgb, #ff4444 10%, transparent);
+  color: #ff7070;
+}
+.pv-action-del:hover {
+  background: color-mix(in srgb, #ff4444 22%, transparent);
+  color: #ff9090;
+  box-shadow: 0 0 14px color-mix(in srgb, #ff4444 22%, transparent);
+}
+
+.pv-nav-strip {
+  display: flex; align-items: center; gap: 10px;
+  padding: 18px 24px; border-top: 1px solid var(--hairline); flex-shrink: 0;
+}
+.pv-nav-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 16px; border-radius: 10px; border: none; cursor: pointer;
+  font-family: var(--sans); font-size: 13px; font-weight: 600;
+  color: var(--ink); flex: 1; transition: all 0.3s var(--ease);
+}
+.pv-nav-btn:first-child { justify-content: flex-start; }
+.pv-nav-btn:last-child  { justify-content: flex-end; }
+.pv-nav-btn:hover { color: var(--gold); }
+.pv-counter {
+  font-family: var(--sans); font-size: 12px; color: var(--ink-mut);
+  text-align: center; white-space: nowrap;
+}
+
+/* =========================================================================
+   Responsive
+   ========================================================================= */
+@media (max-width: 1000px) {
+  .pv-modal { grid-template-columns: 1fr; grid-template-rows: 52vh 1fr; max-height: 94vh; overflow-y: auto; }
+  .pv-detail-panel { border-left: none; border-top: 1px solid var(--hairline); max-height: none; overflow: visible; }
+  .pv-detail-scroll { overflow: visible; max-height: none; }
+  .pv-img-panel { min-height: 52vh; }
+  .pv-arrow-l { left: 10px; }
+  .pv-arrow-r { right: 10px; }
+  .pf-masonry { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .pv-overlay { padding: 0; align-items: flex-end; }
+  .pv-modal { border-radius: 22px 22px 0 0; max-height: 96vh; grid-template-rows: 45vh auto; overflow-y: auto; }
+  .pv-detail-scroll { padding: 24px 20px 16px; }
+  .pv-nav-strip { padding: 14px 20px; }
+  .pv-close { top: 12px; right: 12px; width: 38px; height: 38px; }
+  .pf-masonry { grid-template-columns: 1fr; }
+  .pf-filter-bar { gap: 8px; }
+  .chip { font-size: 12px; padding: 8px 16px; }
+}
+
+/* =========================================================================
+   Work / Services — 3D depth enhancements
+   ========================================================================= */
+
+/* ── Service cards — 3D hover with depth ─────────────────────────────── */
+.svc-card {
+  will-change: transform;
+  transition: transform 0.65s cubic-bezier(0.22,1,0.36,1),
+              box-shadow 0.5s var(--ease),
+              border-color 0.4s var(--ease);
+  overflow: visible;
+}
+.svc-card:hover {
+  border-color: rgba(var(--gold-rgb), 0.4);
+  box-shadow:
+    0 30px 80px -24px rgba(0,0,0,0.7),
+    0 0 0 1px rgba(var(--gold-rgb),0.25),
+    0 0 40px -10px rgba(var(--gold-rgb),0.2);
+}
+.svc-ico {
+  box-shadow:
+    0 0 0 1px var(--gold-line),
+    0 8px 24px -8px rgba(var(--gold-rgb),0.3),
+    inset 0 1px 0 rgba(255,255,255,0.1);
+}
+.svc-card:hover .svc-ico {
+  box-shadow:
+    0 0 0 1px rgba(var(--gold-rgb),0.6),
+    0 0 20px -6px rgba(var(--gold-rgb),0.7),
+    0 12px 30px -10px rgba(var(--gold-rgb),0.4);
+}
+
+/* ── Portfolio cards — enhanced depth ────────────────────────────────── */
+.pf-card {
+  will-change: transform;
+  /* cursor/pointer-events enforced above — don't remove them here */
+  cursor: pointer !important; pointer-events: auto !important;
+  transition: transform 0.55s cubic-bezier(0.22,1,0.36,1),
+              box-shadow 0.5s var(--ease),
+              border-color 0.4s var(--ease);
+}
+.pf-card:hover {
+  transform: translateY(-12px) scale(1.018);
+  box-shadow:
+    0 40px 80px -28px rgba(0,0,0,0.75),
+    0 0 0 1px rgba(var(--gold-rgb),0.3),
+    0 0 40px -12px rgba(var(--gold-rgb),0.18);
+}
+
+/* thumbnail scale on hover */
+.pf-img {
+  transition: transform 0.7s cubic-bezier(0.22,1,0.36,1);
+}
+.pf-card:hover .pf-img { transform: scale(1.09); }
+
+/* ── Filter chips — 3D press effect ─────────────────────────────────── */
+.chip {
+  transition: all 0.35s var(--ease), transform 0.18s var(--ease);
+}
+.chip:active {
+  transform: scale(0.95) translateY(2px);
+}
+.chip.on {
+  box-shadow:
+    0 10px 28px -12px rgba(var(--gold-rgb),0.7),
+    0 0 20px -6px rgba(var(--gold-rgb),0.4);
+}
+
+/* ── Modal — 3D entrance ──────────────────────────────────────────────── */
+.pv-modal {
+  box-shadow:
+    0 60px 140px -40px rgba(0,0,0,0.95),
+    0 0 0 1px rgba(var(--gold-rgb),0.1),
+    0 0 60px -20px rgba(var(--gold-rgb),0.1);
+}
+@keyframes pv-modal-in {
+  from { opacity: 0; transform: scale(0.88) translateY(40px) rotateX(6deg); transform-origin: center bottom; }
+  to   { opacity: 1; transform: scale(1)    translateY(0)    rotateX(0deg); }
+}
+
+/* ── Portfolio background accents — animated ─────────────────────────── */
+.pf-bg-accent {
+  animation: pf-accent-drift 12s ease-in-out infinite alternate;
+}
+.pf-bg-accent-2 {
+  animation: pf-accent-drift 15s ease-in-out infinite alternate-reverse;
+}
+@keyframes pf-accent-drift {
+  from { transform: translateY(0)   scale(1);    opacity: 0.9; }
+  to   { transform: translateY(-30px) scale(1.1); opacity: 1;   }
+}
+
+/* =========================================================================
+   Inline expand viewer — opens inside the grid row, no overlay/freeze
+   ========================================================================= */
+
+/* Spans all 3 grid columns so it acts as a full-width row */
+.pf-inline-expand {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 28px;
+  background: var(--bg-2);
+  border: 1px solid var(--hairline);
+  border-radius: 20px;
+  padding: 28px 32px 28px 28px;
+  position: relative;
+  overflow: hidden;
+  animation: ie-open 0.38s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
+}
+.pf-inline-expand::before {
+  content: "";
+  position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background: radial-gradient(ellipse 70% 80% at 30% 50%, rgba(var(--gold-rgb), 0.045), transparent 70%);
+}
+.pf-ie-img-col,
+.pf-ie-info { position: relative; z-index: 1; }
+
+@keyframes ie-open {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Close button */
+.pf-ie-close {
+  position: absolute; top: 16px; right: 16px; z-index: 10;
+  width: 36px; height: 36px; border-radius: 50%;
+  display: grid; place-items: center;
+  cursor: pointer; color: var(--ink-mut);
+  border: 1px solid var(--hairline);
+  background: var(--surface);
+  transition: color 0.25s, border-color 0.25s, transform 0.3s;
+}
+.pf-ie-close:hover { color: var(--gold); border-color: var(--gold-line); transform: rotate(90deg) scale(1.1); }
+
+/* Image column */
+.pf-ie-img-wrap {
+  position: relative;
+  background: var(--bg);
+  border-radius: 14px;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  display: flex; align-items: center; justify-content: center;
+}
+.pf-ie-img {
+  width: 100%; height: 100%; object-fit: contain;
+  display: block; opacity: 0;
+  transition: opacity 0.35s;
+}
+.pf-ie-img.loaded { opacity: 1; }
+.pf-ie-img-ph { width: 100%; height: 100%; min-height: 200px; }
+
+/* Image nav arrows */
+.pf-ie-arrow {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 40px; height: 40px; border-radius: 50%;
+  display: grid; place-items: center;
+  cursor: pointer; color: var(--ink); border: none;
+  transition: all 0.25s var(--ease); opacity: 0.75; z-index: 3;
+}
+.pf-ie-arrow:hover { opacity: 1; color: var(--gold); }
+.pf-ie-arrow-l { left: 10px; }
+.pf-ie-arrow-r { right: 10px; }
+
+/* Slide dots */
+.pf-ie-dots {
+  position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 6px; z-index: 4;
+}
+.pf-ie-dot {
+  width: 7px; height: 7px; border-radius: 50%; border: none;
+  cursor: pointer; background: rgba(255,255,255,0.3); padding: 0;
+  transition: all 0.22s;
+}
+.pf-ie-dot.on { background: var(--gold); width: 18px; border-radius: 4px; }
+
+/* Thumbnail strip */
+.pf-ie-strip { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+.pf-ie-thumb {
+  width: 52px; height: 40px; border-radius: 8px; overflow: hidden;
+  padding: 0; border: 2px solid transparent; cursor: pointer;
+  background: var(--bg-2);
+  transition: border-color 0.22s var(--ease), transform 0.22s var(--ease);
+  flex-shrink: 0;
+}
+.pf-ie-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pf-ie-thumb.on { border-color: var(--gold); transform: scale(1.06); }
+.pf-ie-thumb:hover:not(.on) { border-color: var(--gold-line); }
+
+/* Info column */
+.pf-ie-info {
+  display: flex; flex-direction: column; gap: 16px;
+  padding-top: 4px;
+}
+.pf-ie-title {
+  font-size: clamp(18px, 2.2vw, 26px); font-weight: 700;
+  line-height: 1.25; margin: 0; color: var(--ink);
+}
+.pf-ie-desc {
+  color: var(--ink-soft); font-size: 14px; line-height: 1.72; margin: 0;
+}
+.pf-ie-section { display: flex; flex-direction: column; gap: 6px; }
+.pf-ie-year { font-family: var(--sans); font-size: 14px; color: var(--ink-soft); }
+
+/* Nav strip */
+.pf-ie-nav {
+  display: flex; align-items: center; gap: 10px;
+  margin-top: auto; padding-top: 8px;
+  border-top: 1px solid var(--hairline);
+}
+.pf-ie-nav-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 14px; border-radius: 10px; border: none;
+  font-family: var(--sans); font-size: 13px; font-weight: 600;
+  color: var(--ink); flex: 1; cursor: pointer;
+  background: var(--surface);
+  transition: color 0.25s, background 0.25s;
+}
+.pf-ie-nav-btn:first-child { justify-content: flex-start; }
+.pf-ie-nav-btn:last-child  { justify-content: flex-end; }
+.pf-ie-nav-btn:hover:not(:disabled) { color: var(--gold); background: color-mix(in srgb, var(--gold) 8%, var(--surface)); }
+.pf-ie-nav-btn:disabled { opacity: 0.3; cursor: default; pointer-events: none; }
+.pf-ie-counter { font-family: var(--sans); font-size: 12px; color: var(--ink-mut); text-align: center; flex-shrink: 0; }
+
+/* ── Active card — gold ring highlight ───────────────────────────── */
+.pf-card--active {
+  border-color: rgba(var(--gold-rgb), 0.55) !important;
+  box-shadow:
+    0 0 0 2px rgba(var(--gold-rgb), 0.22),
+    0 20px 50px -16px rgba(0,0,0,0.6) !important;
+}
+/* Suppress hover-lift while active */
+.pf-card--active:hover {
+  transform: none !important;
+}
+
+/* ── Hover overlay content (View Project / Close) ────────────────── */
+.pf-view-ring {
+  width: 54px; height: 54px; border-radius: 50%;
+  border: 2px solid rgba(22,15,2,0.45);
+  background: rgba(22,15,2,0.3);
+  display: grid; place-items: center;
+  color: #160f02;
+  transition: transform 0.35s var(--ease);
+}
+.pf-card:hover .pf-view-ring { transform: scale(1.08); }
+.pf-view-label {
+  font-family: var(--sans); font-size: 13px; font-weight: 700;
+  color: #160f02; letter-spacing: 0.04em;
+}
+
+/* ── Responsive ───────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .pf-inline-expand { grid-template-columns: 1fr; padding: 22px; gap: 20px; }
+  .pf-ie-info { padding-top: 0; }
+}
+@media (max-width: 640px) {
+  .pf-inline-expand { padding: 18px; border-radius: 16px; }
+  .pf-ie-title { font-size: 18px; }
+}

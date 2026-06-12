@@ -1,0 +1,634 @@
+/* ---- Hero -------------------------------------------------------------- */
+.hero { padding-top: 120px; padding-bottom: 60px; overflow: hidden; }
+
+/* ── Background effects ──────────────────────────────────────────────── */
+.hero-bg-glow {
+  position: absolute; top: -8%; right: -4%;
+  width: 56vw; height: 56vw; max-width: 720px; max-height: 720px;
+  background: radial-gradient(ellipse at 60% 38%,
+    rgba(var(--gold-rgb), 0.2) 0%,
+    rgba(var(--gold-rgb), 0.06) 42%,
+    transparent 66%);
+  pointer-events: none; z-index: 0; filter: blur(10px);
+}
+.hero-bg-glow-2 {
+  top: auto; bottom: -12%; right: auto; left: -8%;
+  width: 40vw; height: 40vw; max-width: 500px; max-height: 500px;
+  background: radial-gradient(ellipse, rgba(var(--gold-rgb), 0.10), transparent 66%);
+}
+
+/* Animated dot mesh — full hero, fades at edges */
+.hero::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    radial-gradient(circle, rgba(var(--gold-rgb), 0.30) 1.5px, transparent 1.5px),
+    radial-gradient(circle, rgba(var(--gold-rgb), 0.12) 1px,   transparent 1px);
+  background-size: 36px 36px, 18px 18px;
+  background-position: 0 0, 9px 9px;
+  mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, black 40%, transparent 90%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, black 40%, transparent 90%);
+  animation: hero-dot-drift 18s linear infinite, hero-dot-pulse 4s ease-in-out infinite alternate;
+}
+@keyframes hero-dot-drift {
+  from { background-position: 0 0, 9px 9px; }
+  to   { background-position: 36px 36px, 27px 27px; }
+}
+@keyframes hero-dot-pulse {
+  0%   { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+/* ── Split grid: ~55 / 45 ────────────────────────────────────────────── */
+.hero-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: clamp(24px, 4vw, 56px); align-items: center;
+  position: relative; z-index: 1;
+}
+
+/* ── Left column — text ──────────────────────────────────────────────── */
+.hero-text { max-width: 580px; }
+
+/* Intro badge */
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 9px 18px; border-radius: 999px; margin-bottom: 24px;
+  font-family: var(--sans); font-size: 12px; font-weight: 600;
+  color: var(--ink-soft); letter-spacing: 0.04em;
+}
+.hero-badge-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  background: var(--gold); box-shadow: 0 0 0 3px rgba(var(--gold-rgb), 0.22);
+  animation: badge-pulse 2.4s ease-in-out infinite;
+}
+@keyframes badge-pulse {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(var(--gold-rgb), 0.22); }
+  50%       { box-shadow: 0 0 0 7px rgba(var(--gold-rgb), 0.08); }
+}
+
+/* Main headline — 3 punchy lines */
+.hero-h1 {
+  font-size: clamp(30px, 4.2vw, 52px);
+  line-height: 1.12; letter-spacing: -0.025em;
+  margin: 0 0 22px;
+}
+
+/* Supporting paragraph */
+.hero-roles { font-family: var(--sans); font-weight: 700; font-size: clamp(14px, 2vw, 17px); letter-spacing: 0.04em; color: var(--ink-soft); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.hero-intro { color: var(--ink-soft); font-size: clamp(14.5px, 1.7vw, 17px); max-width: 48ch; margin: 0 0 28px; line-height: 1.72; }
+
+/* CTA row */
+.hero-ctas { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+
+/* Social proof metrics bar */
+.hero-metrics {
+  display: flex; align-items: center;
+  width: fit-content; max-width: 100%;
+  margin-top: 26px; padding: 16px 22px; border-radius: 16px;
+}
+.hero-metric {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  gap: 3px; min-width: 64px;
+}
+.hero-metric-val {
+  font-family: var(--display); font-weight: 800;
+  font-size: clamp(18px, 2.2vw, 24px); line-height: 1;
+}
+.hero-metric-lab {
+  font-family: var(--sans); font-size: 11px; color: var(--ink-mut);
+  letter-spacing: 0.02em; text-align: center; white-space: nowrap;
+}
+.hero-metric-sep { width: 1px; height: 32px; background: var(--hairline); flex-shrink: 0; margin: 0 8px; }
+
+/* Social icons */
+.social-rail { display: flex; gap: 12px; margin-top: 28px; }
+.social-rail.vert { flex-direction: column; }
+.soc-btn {
+  width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center;
+  color: var(--ink-soft); background: var(--surface); border: 1px solid var(--hairline);
+  text-decoration: none; transition: all 0.4s var(--ease);
+  animation: floatIn 0.7s var(--ease) backwards; animation-delay: var(--d);
+  backdrop-filter: blur(10px);
+}
+.soc-btn:hover { color: var(--gold); border-color: var(--gold); transform: translateY(-4px); box-shadow: 0 12px 26px -12px rgba(var(--gold-rgb), 0.6); }
+@keyframes floatIn { from { opacity: 0; transform: translateY(14px); } }
+
+/* ── Right column — portrait ─────────────────────────────────────────── */
+.hero-visual {
+  display: flex; justify-content: center;
+  position: relative; padding-top: 20px; margin-top: -30px;
+}
+.portrait { position: relative; width: min(420px, 96%); }
+
+/* Warm+cool glow behind the portrait */
+.portrait-glow {
+  position: absolute; inset: -28% -16%; pointer-events: none;
+  background: radial-gradient(ellipse at 55% 36%,
+    rgba(var(--gold-rgb), 0.22) 0%,
+    rgba(var(--gold-rgb), 0.10) 42%,
+    transparent 70%);
+  filter: blur(44px);
+}
+
+/* Portrait frame — arched top, subtle square bottom */
+.portrait-frame {
+  border-radius: 180px 180px 28px 28px; overflow: hidden; aspect-ratio: 3/4;
+  box-shadow: 0 40px 100px -30px rgba(0, 0, 0, 0.8);
+  animation: portrait-float 7s ease-in-out infinite;
+}
+.portrait-frame img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 8%; display: block; }
+.portrait-shine {
+  position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(160deg, rgba(255,255,255,0.16), transparent 34%, transparent 76%, rgba(var(--gold-rgb),0.14));
+}
+@keyframes portrait-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+@media (prefers-reduced-motion: reduce) { .portrait-frame { animation: none; } }
+
+/* Floating achievement chips */
+.float-chip {
+  position: absolute; display: flex; align-items: center; gap: 8px; padding: 10px 14px;
+  border-radius: 12px; font-family: var(--sans); font-size: 12.5px; font-weight: 600;
+  color: var(--ink); box-shadow: 0 14px 36px -12px rgba(0, 0, 0, 0.55);
+  animation: bob 5s ease-in-out infinite; white-space: nowrap;
+}
+.float-chip span { color: var(--ink-soft); }
+.float-chip strong { color: var(--ink); }
+
+/* "Available for Projects" — top-left */
+.chip-a { top: 36px; left: -28px; animation-delay: 0s; }
+.chip-a .chip-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; background: var(--gold); box-shadow: 0 0 0 4px rgba(var(--gold-rgb),0.2); }
+
+/* "Design Executive" — right side, upper */
+.chip-b { top: 118px; right: -42px; animation-delay: 1s; }
+
+/* "150+ Creatives" — right side, lower, stacked layout */
+.chip-c { bottom: 104px; right: -42px; flex-direction: column; align-items: flex-start; gap: 2px; animation-delay: 1.9s; }
+.chip-c strong { font-size: 22px; line-height: 1; }
+
+/* "Digital Marketing" — bottom-left */
+.chip-d { bottom: 18px; left: -14px; animation-delay: 2.8s; }
+
+@keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+@media (prefers-reduced-motion: reduce) { .float-chip { animation: none; } }
+
+/* ── Stats bar ───────────────────────────────────────────────────────── */
+.hero-stats-anchor { margin-top: clamp(44px, 7vw, 80px); position: relative; z-index: 1; }
+.stats-bar { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: clamp(22px, 3vw, 36px) clamp(24px, 4vw, 52px); flex-wrap: wrap; }
+.stats-bar .stat { text-align: center; flex: 1 1 auto; min-width: 120px; }
+.stats-sep { width: 1px; align-self: stretch; background: var(--hairline); }
+
+/* ── Variant 2 — centered / editorial ───────────────────────────────── */
+.hero-center { text-align: center; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 1; }
+.hero-arch-wrap { display: flex; flex-direction: column; align-items: center; gap: 22px; margin-bottom: 6px; }
+.hero-arch-cartoon { width: min(340px, 80vw); position: relative; }
+.hero-arch { width: min(260px, 64vw); aspect-ratio: 1/1.12; border-radius: 999px 999px 24px 24px; overflow: hidden; position: relative; box-shadow: var(--shadow); }
+.hero-arch img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 16%; }
+.hero-v2 .hero-text { max-width: 860px; }
+.hero-v2 .hero-badge { margin-inline: auto; }
+.hero-v2 .hero-h1 { font-size: clamp(30px, 5.5vw, 68px); }
+.hero-v2 .hero-ctas, .hero-v2 .hero-roles { justify-content: center; }
+.hero-v2 .hero-intro { margin-inline: auto; }
+.hero-v2 .hero-metrics { margin-inline: auto; }
+.hero-v2 .d-br { display: none; }
+
+/* ── Variant 3 — split panel ─────────────────────────────────────────── */
+.hero-v3 { padding: 0; }
+.hero-split { display: grid; grid-template-columns: 1.05fr 0.95fr; min-height: 100vh; align-items: center; }
+.hero-split-text { padding-top: 120px; padding-bottom: 60px; }
+.hero-split-text .hero-text { margin-left: auto; max-width: 560px; }
+.hero-split-img { position: relative; align-self: stretch; min-height: 100vh; overflow: hidden; }
+.hero-split-img > img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 18%; }
+.hero-split-cartoon { display: flex; align-items: center; justify-content: center; background: radial-gradient(ellipse at center, rgba(var(--gold-rgb),0.08), transparent 70%); }
+.hero-split-cartoon .cartoon-svg { max-width: 380px; }
+.hero-split-veil { position: absolute; inset: 0; background: linear-gradient(90deg, var(--bg), transparent 30%), linear-gradient(0deg, rgba(var(--gold-rgb),0.08), transparent 50%); pointer-events: none; }
+.hero-v3 .social-rail.vert { position: absolute; top: 50%; right: 30px; transform: translateY(-50%); }
+.hero-v3 .hero-stats-anchor { grid-column: 1 / -1; padding-bottom: 60px; }
+.hero-v3 .hero-bg-glow { display: none; }
+
+/* ── Responsive ──────────────────────────────────────────────────────── */
+@media (max-width: 980px) {
+  .hero-grid { grid-template-columns: 1fr; gap: 48px; }
+  .hero-visual { order: -1; padding-top: 0; justify-content: center; }
+  .portrait { width: min(360px, 80%); }
+  .chip-a { left: -8px; top: 28px; }
+  .chip-b { right: -8px; top: 92px; }
+  .chip-c { right: -8px; bottom: 80px; }
+  .chip-d { left: -8px; bottom: 14px; }
+  .hero-split { grid-template-columns: 1fr; min-height: auto; }
+  .hero-split-img { min-height: 60vh; order: -1; }
+  .hero-split-text { padding-top: 120px; }
+  .hero-split-text .hero-text { margin-inline: auto; }
+  .hero-v3 .social-rail.vert { flex-direction: row; top: auto; bottom: 18px; right: 50%; transform: translateX(50%); }
+}
+
+@media (max-width: 700px) {
+  .hero { padding-top: 96px; }
+  .hero-metrics { flex-wrap: wrap; gap: 10px 0; padding: 14px 16px; width: 100%; }
+  .hero-metric { min-width: calc(50% - 16px); }
+  .hero-metric-sep { display: none; }
+}
+
+@media (max-width: 560px) {
+  .stats-bar { gap: 22px 14px; }
+  .stats-sep { display: none; }
+  .stats-bar .stat { min-width: 40%; }
+  .d-br { display: none; }
+  .hero-badge { font-size: 11px; padding: 7px 14px; gap: 8px; }
+  .hero-ctas { gap: 10px; }
+  .float-chip { font-size: 11.5px; padding: 8px 12px; gap: 6px; }
+  .chip-b { right: -4px; top: 76px; }
+  .chip-c { right: -4px; bottom: 64px; }
+  .chip-d { bottom: 10px; left: -4px; }
+}
+
+/* =========================================================================
+   Hero — 3D depth & animation enhancements
+   ========================================================================= */
+
+/* ── Deeper hero background glows ────────────────────────────────────── */
+.hero {
+  perspective: 900px;
+  perspective-origin: 50% 40%;
+}
+.hero-bg-glow {
+  filter: blur(18px);
+  animation: hero-glow-pulse 8s ease-in-out infinite alternate;
+}
+.hero-bg-glow-2 {
+  animation: hero-glow-pulse 10s ease-in-out infinite alternate-reverse;
+}
+@keyframes hero-glow-pulse {
+  from { opacity: 0.6; transform: scale(1); }
+  to   { opacity: 1.0; transform: scale(1.12); }
+}
+
+/* ── Badge — gold pulse ──────────────────────────────────────────────── */
+.hero-badge {
+  animation: neon-pulse-anim 3.5s ease-in-out infinite;
+  transform-origin: left center;
+}
+.hero-badge-dot {
+  animation: badge-pulse 2.2s ease-in-out infinite;
+}
+
+/* ── Headline — 3D perspective on scroll ─────────────────────────────── */
+.hero-h1 {
+  transform-origin: bottom left;
+  transition: transform 0.3s var(--ease);
+}
+
+/* ── Portrait — 3D depth wrapper ─────────────────────────────────────── */
+.portrait {
+  transform-style: preserve-3d;
+}
+.portrait-frame {
+  will-change: transform;
+  transition: transform 0.8s cubic-bezier(0.22,1,0.36,1);
+  box-shadow:
+    0 40px 100px -30px rgba(0,0,0,0.9),
+    0 0 50px -12px rgba(var(--gold-rgb),0.22);
+}
+.portrait-glow {
+  animation: portrait-glow-breathe 6s ease-in-out infinite;
+}
+@keyframes portrait-glow-breathe {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50%       { opacity: 1.0; transform: scale(1.08); }
+}
+
+/* ── Floating chips — 3D depth layers ────────────────────────────────── */
+.float-chip {
+  will-change: transform;
+  box-shadow:
+    0 14px 36px -12px rgba(0,0,0,0.7),
+    0 0 0 1px rgba(var(--gold-rgb),0.12),
+    inset 0 1px 0 rgba(255,255,255,0.1);
+  transition: transform 0.12s linear;
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+}
+/* restore bob animation as default when JS not active */
+.float-chip { animation: bob 5s ease-in-out infinite; }
+
+/* chip glow accents */
+.chip-a { border-color: rgba(var(--gold-rgb),0.25); }
+.chip-b { border-color: rgba(var(--gold-rgb),0.18); }
+.chip-c { border-color: rgba(var(--gold-rgb),0.22); }
+.chip-d { border-color: rgba(var(--gold-rgb),0.15); }
+
+/* ── Stats bar — neon underline ──────────────────────────────────────── */
+.stats-bar {
+  box-shadow:
+    0 0 0 1px var(--gold-line),
+    0 30px 60px -20px rgba(0,0,0,0.6),
+    0 0 30px -8px rgba(var(--gold-rgb),0.15);
+  transition: box-shadow 0.5s var(--ease);
+}
+.stats-bar:hover {
+  box-shadow:
+    0 0 0 1px rgba(var(--gold-rgb),0.4),
+    0 30px 60px -20px rgba(0,0,0,0.7),
+    0 0 50px -8px rgba(var(--gold-rgb),0.25);
+}
+
+/* ── Social buttons — 3D depth hover ─────────────────────────────────── */
+.soc-btn:hover {
+  transform: translateY(-6px) rotateZ(-4deg) scale(1.08);
+  box-shadow:
+    0 16px 32px -12px rgba(var(--gold-rgb),0.7),
+    0 0 16px -4px rgba(var(--gold-rgb),0.4);
+}
+
+/* ── Hero metrics — card depth ───────────────────────────────────────── */
+.hero-metrics {
+  box-shadow:
+    0 0 0 1px var(--gold-line),
+    0 20px 50px -16px rgba(0,0,0,0.5),
+    0 0 24px -6px rgba(var(--gold-rgb),0.12);
+}
+.hero-metric-val {
+  filter: drop-shadow(0 0 6px rgba(var(--gold-rgb),0.45));
+  animation: metric-glow 4s ease-in-out infinite alternate;
+}
+@keyframes metric-glow {
+  from { filter: drop-shadow(0 0 4px rgba(var(--gold-rgb),0.3)); }
+  to   { filter: drop-shadow(0 0 12px rgba(var(--gold-rgb),0.6)); }
+}
+
+/* ── Mesh dot grid on hero — animate ─────────────────────────────────── */
+.hero::after {
+  animation: mesh-drift 40s linear infinite;
+}
+@keyframes mesh-drift {
+  from { background-position: 0 0; }
+  to   { background-position: 60px 60px; }
+}
+
+/* =========================================================================
+   Portrait photo — animation & depth enhancements
+   ========================================================================= */
+
+/* ── Inner shine overlay position fix ─────────────────────────────────── */
+.portrait-frame { position: relative; }
+.portrait-shine { position: absolute; inset: 0; pointer-events: none; border-radius: inherit; }
+
+/* ── Halo ring that pulses behind the photo ────────────────────────────── */
+.portrait::before {
+  content: "";
+  position: absolute;
+  inset: -8%;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    rgba(var(--gold-rgb), 0.22),
+    rgba(var(--gold-rgb), 0.06),
+    rgba(var(--gold-rgb), 0.18),
+    rgba(var(--gold-rgb), 0.08),
+    rgba(var(--gold-rgb), 0.22)
+  );
+  filter: blur(28px);
+  animation: halo-spin 16s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+@keyframes halo-spin {
+  from { transform: rotate(0deg) scale(1); }
+  50%  { transform: rotate(180deg) scale(1.06); }
+  to   { transform: rotate(360deg) scale(1); }
+}
+
+/* orbit-dash border removed */
+
+/* =========================================================================
+   Extra global animation enhancements — gold-only palette
+   ========================================================================= */
+
+/* ── Hero badge — gold glow ──────────────────────────────────────────────── */
+.hero-badge {
+  background: rgba(var(--gold-rgb), 0.07);
+  border-color: rgba(var(--gold-rgb), 0.22);
+}
+.hero-badge-dot {
+  background: var(--gold);
+  box-shadow: 0 0 0 3px rgba(var(--gold-rgb), 0.22);
+}
+@keyframes badge-pulse {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(var(--gold-rgb), 0.22); }
+  50%       { box-shadow: 0 0 0 8px rgba(var(--gold-rgb), 0.06), 0 0 18px rgba(var(--gold-rgb), 0.28); }
+}
+
+/* ── Social buttons — gold on hover ─────────────────────────────────────── */
+.soc-btn:hover {
+  color: var(--gold);
+  border-color: var(--gold);
+  box-shadow: 0 16px 32px -12px rgba(var(--gold-rgb),0.55),
+              0 0 16px -4px rgba(var(--gold-rgb),0.35);
+}
+
+/* ── Float chips — unified gold borders ─────────────────────────────────── */
+.chip-a { border-color: rgba(var(--gold-rgb),0.28); }
+.chip-b { border-color: rgba(var(--gold-rgb),0.22); }
+.chip-c { border-color: rgba(var(--gold-rgb),0.30); }
+.chip-d { border-color: rgba(var(--gold-rgb),0.20); }
+.chip-a .chip-dot { background: var(--gold-bright); box-shadow: 0 0 0 4px rgba(var(--gold-rgb),0.18); }
+
+/* ── Metric value glows in gold ─────────────────────────────────────────── */
+@keyframes metric-glow {
+  from { filter: drop-shadow(0 0 4px rgba(var(--gold-rgb),0.35)); }
+  to   { filter: drop-shadow(0 0 14px rgba(var(--gold-rgb),0.65)); }
+}
+
+/* gold-grad defined once in styles.css — no override needed here */
+
+/* =========================================================================
+   3D Character Portrait
+   ========================================================================= */
+
+/* =========================================================================
+   3D Character canvas — 360° turntable  (assets/Parama 3D.png)
+   Big, floating, transparent — no card/box
+   ========================================================================= */
+
+.char-3d-wrap {
+  position: relative;
+  /* Wider + taller than original portrait for bigger visual impact */
+  width: min(460px, 96%);
+  aspect-ratio: 460 / 600;
+  overflow: visible;          /* chips extend outside */
+  animation: portrait-enter 1.0s var(--ease) 0.35s both;
+}
+
+/* Cyan atmospheric backlight */
+.char-aura {
+  position: absolute;
+  inset: -8% -14%;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse 68% 58% at 50% 44%,
+    rgba(6, 182, 212, 0.16) 0%,
+    rgba(8, 145, 178, 0.06) 52%,
+    transparent 78%
+  );
+  filter: blur(26px);
+  pointer-events: none;
+  z-index: 0;
+  animation: aura-breathe 6s ease-in-out infinite;
+}
+/* Cyan secondary aura */
+.char-aura-2 {
+  background: radial-gradient(
+    ellipse 55% 45% at 50% 78%,
+    rgba(34, 211, 238, 0.18) 0%,
+    rgba(6, 182, 212, 0.06) 55%,
+    transparent 80%
+  );
+  animation-delay: 1.1s;
+}
+@keyframes aura-breathe {
+  0%, 100% { opacity: 0.72; transform: scale(1);    }
+  50%       { opacity: 1.00; transform: scale(1.08); }
+}
+
+/* Canvas — fills the wrapper, transparent bg, no card styling */
+.char-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 1;
+  cursor: grab;
+}
+.char-canvas:active { cursor: grabbing; }
+
+/* Chip positions relative to wrapper */
+.char-3d-wrap .chip-a { top: 8px;    left: -22px;  }
+.char-3d-wrap .chip-b { top: 110px;  right: -36px; }
+.char-3d-wrap .chip-c { bottom: 80px;  right: -36px; }
+.char-3d-wrap .chip-d { bottom: 4px;  left: -8px;  }
+
+/* Responsive */
+@media (max-width: 1080px) {
+  .char-3d-wrap { width: min(380px, 94%); aspect-ratio: 380/500; }
+}
+@media (max-width: 700px) {
+  .char-3d-wrap { width: min(320px, 90%); aspect-ratio: 320/420; }
+  .char-3d-wrap .chip-a { left: -10px; }
+  .char-3d-wrap .chip-b { right: -10px; }
+  .char-3d-wrap .chip-c { right: -10px; }
+}
+
+/* =========================================================================
+   Enhanced photo portrait — entrance & ambient animations
+   ========================================================================= */
+
+/* ── Portrait frame — entrance + continuous float ──────────────────────── */
+.portrait-frame {
+  animation:
+    portrait-enter 1s var(--ease) both,
+    portrait-float 7s ease-in-out 1s infinite;
+  animation-delay: 0.3s, 1.3s;
+}
+@keyframes portrait-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.88) translateY(30px);
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: blur(0);
+  }
+}
+
+/* ── Float chips — staggered bounce entrance ───────────────────────────── */
+.chip-a { animation: chip-enter 0.7s var(--ease) 0.9s both, bob 5.0s ease-in-out 1.6s infinite; }
+.chip-b { animation: chip-enter 0.7s var(--ease) 1.1s both, bob 5.4s ease-in-out 1.8s infinite; }
+.chip-c { animation: chip-enter 0.7s var(--ease) 1.3s both, bob 4.8s ease-in-out 2.1s infinite; }
+.chip-d { animation: chip-enter 0.7s var(--ease) 1.5s both, bob 5.2s ease-in-out 2.4s infinite; }
+@keyframes chip-enter {
+  0%   { opacity: 0; transform: scale(0.7) translateY(18px); }
+  60%  { opacity: 1; transform: scale(1.06) translateY(-4px); }
+  80%  { transform: scale(0.97) translateY(1px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ── Hero headline — letter stagger entrance ───────────────────────────── */
+.hero-h1 {
+  animation: headline-rise 0.9s var(--ease) 0.2s both;
+}
+@keyframes headline-rise {
+  from { opacity: 0; transform: translateY(40px) skewY(2deg); }
+  to   { opacity: 1; transform: translateY(0) skewY(0deg); }
+}
+
+/* ── Hero intro — slide-fade ───────────────────────────────────────────── */
+.hero-intro {
+  animation: intro-fade 0.8s var(--ease) 0.45s both;
+}
+@keyframes intro-fade {
+  from { opacity: 0; transform: translateX(-16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ── Metrics bar — scale pop ───────────────────────────────────────────── */
+.hero-metrics {
+  animation: metrics-pop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.75s both;
+}
+@keyframes metrics-pop {
+  from { opacity: 0; transform: scale(0.9) translateY(12px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ── Portrait glow — continuous breathe ────────────────────────────────── */
+.portrait-glow {
+  animation: portrait-glow-breathe 6s ease-in-out infinite;
+}
+
+/* ── Floating chip glow accents on hover ───────────────────────────────── */
+.float-chip:hover {
+  transform: translateY(-6px) scale(1.04) !important;
+  box-shadow:
+    0 18px 40px -12px rgba(0,0,0,0.7),
+    0 0 0 1px rgba(var(--gold-rgb),0.35),
+    0 0 24px -6px rgba(var(--gold-rgb),0.4) !important;
+  transition: all 0.3s var(--ease);
+}
+
+/* ── Social rail — staggered wave entrance ─────────────────────────────── */
+.social-rail .soc-btn {
+  animation: soc-wave 0.6s var(--ease) calc(1.2s + var(--d)) both;
+}
+@keyframes soc-wave {
+  from { opacity: 0; transform: translateY(20px) scale(0.8); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ── Hero CTA buttons — staggered slide-up ─────────────────────────────── */
+.hero-ctas .btn {
+  animation: cta-rise 0.6s var(--ease) 0.65s both;
+}
+.hero-ctas .btn:nth-child(2) { animation-delay: 0.78s; }
+.hero-ctas .btn:nth-child(3) { animation-delay: 0.91s; }
+@keyframes cta-rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Stats bar — slide up from below ───────────────────────────────────── */
+.stats-bar {
+  animation: stats-enter 0.8s var(--ease) 1.4s both;
+}
+@keyframes stats-enter {
+  from { opacity: 0; transform: translateY(28px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ── Hero badge — neon slide-in ────────────────────────────────────────── */
+.hero-badge {
+  animation: badge-slide 0.7s var(--ease) 0s both, neon-pulse-anim 3.5s ease-in-out 0.7s infinite;
+}
+@keyframes badge-slide {
+  from { opacity: 0; transform: translateX(-22px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+

@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio Gallery — Paramasivan V</title>
+  <meta name="description" content="Complete portfolio gallery of Paramasivan V — festival campaigns, travel promotions, lead-gen creatives, social media designs and more." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://unpkg.com" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,500;0,600;0,700;0,800;1,500;1,600;1,700&family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet" />
+
+  <!-- FIX #1 — app/ui.jsx and app/work.jsx are shared with the main portfolio
+       page, and the main page loads Lenis + GSAP + ScrollTrigger before them.
+       This page did NOT, so ui.jsx / work.jsx crashed during evaluation and
+       window.ProjectModal / window.Reveal / window.Icon were never exported.
+       Result: cards never revealed and clicking a card silently failed.
+       Load the same libraries here so the shared files behave identically. -->
+  <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/ScrollTrigger.min.js"></script>
+
+  <link rel="stylesheet" href="app/styles.css" />
+  <link rel="stylesheet" href="app/sections.css" />
+  <link rel="stylesheet" href="app/work.css" />
+  <link rel="stylesheet" href="app/gallery.css" />
+
+  <!-- Minimal styles for the built-in fallback viewer (works even if work.css fails) -->
+  <style>
+    .gvf-overlay{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;
+      background:rgba(8,8,12,.88);backdrop-filter:blur(8px);padding:24px;}
+    .gvf-box{position:relative;max-width:min(960px,94vw);max-height:92vh;width:100%;display:flex;flex-direction:column;
+      gap:14px;background:var(--surface,#15151c);border:1px solid var(--hairline,rgba(255,255,255,.1));
+      border-radius:18px;padding:20px;overflow:auto;}
+    .gvf-img-wrap{position:relative;display:flex;align-items:center;justify-content:center;min-height:200px;
+      background:rgba(0,0,0,.25);border-radius:12px;overflow:hidden;}
+    .gvf-img{max-width:100%;max-height:62vh;object-fit:contain;border-radius:12px;display:block;}
+    .gvf-nav{position:absolute;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;
+      border:1px solid var(--hairline,rgba(255,255,255,.18));background:rgba(0,0,0,.45);color:#fff;
+      font-size:20px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+    .gvf-nav:hover{background:rgba(0,0,0,.7);}
+    .gvf-prev{left:10px;} .gvf-next{right:10px;}
+    .gvf-close{position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:50%;cursor:pointer;
+      border:1px solid var(--hairline,rgba(255,255,255,.18));background:rgba(0,0,0,.45);color:#fff;font-size:16px;}
+    .gvf-title{font-family:var(--display,Montserrat,sans-serif);font-size:clamp(18px,2.4vw,24px);
+      color:var(--ink,#f4f1ea);margin:0;}
+    .gvf-desc{font-family:var(--sans,Poppins,sans-serif);font-size:14px;line-height:1.65;
+      color:var(--ink-mut,#b9b4a8);margin:0;}
+    .gvf-meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+    .gvf-chip{font-family:var(--sans,Poppins,sans-serif);font-size:12px;padding:4px 12px;border-radius:999px;
+      border:1px solid var(--hairline,rgba(255,255,255,.14));color:var(--ink-mut,#b9b4a8);}
+    .gvf-counter{font-family:var(--sans,Poppins,sans-serif);font-size:12px;color:var(--ink-mut,#b9b4a8);
+      position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
+      background:rgba(0,0,0,.55);padding:3px 12px;border-radius:999px;}
+    .gvf-projnav{display:flex;justify-content:space-between;gap:10px;margin-top:4px;}
+    .gvf-projbtn{font-family:var(--sans,Poppins,sans-serif);font-size:13px;padding:8px 16px;border-radius:10px;
+      cursor:pointer;border:1px solid var(--gold,#c9a35c);background:transparent;color:var(--gold,#c9a35c);}
+    .gvf-projbtn:disabled{opacity:.35;cursor:default;}
+  </style>
+</head>
+<body>
+  <div class="aura"></div>
+  <div class="grain"></div>
+  <div class="bg-pattern"></div>
+  <div id="gallery-root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script src="app/data.js"></script>
+  <script src="assets/portfolio/portfolio-data.js"></script>
+  <script src="assets/portfolio/file-tree.js"></script>
+  <script type="text/babel" src="app/ui.jsx"></script>
+  <script type="text/babel" src="app/work.jsx"></script>
+
+  <script type="text/babel">
+    /* FIX #2 — OLD CODE (the bug):
+         const { ProjectModal, CAT_META, COMMON_TOOLS } = window;
+       This grabbed the globals ONCE at load time. If work.jsx failed,
+       ProjectModal was frozen as `undefined` forever — so clicking any
+       card rendered <undefined/>, React threw "Element type is invalid",
+       the ErrorBoundary swallowed it, and the page appeared STUCK.
+       Now: read window.* lazily at render time, with safe defaults.   */
+
+    const getProjectModal = () =>
+      (typeof window.ProjectModal === "function" ? window.ProjectModal : null);
+
+    const getCatMeta = () => window.CAT_META || {
+      "General Creative":     { color: "var(--gold, #c9a35c)" },
+      "Festival Creative":    { color: "#e07a5f" },
+      "Lead Generation Post": { color: "#7ab8e0" },
+    };
+
+    const getCommonTools = () =>
+      Array.isArray(window.COMMON_TOOLS) && window.COMMON_TOOLS.length
+        ? window.COMMON_TOOLS
+        : ["Photoshop","Illustrator","Canva","Figma","After Effects",
+           "Premiere Pro","Midjourney","CapCut"];
+
+    /* Icon fallback — if ui.jsx failed, bare `Icon` was a ReferenceError
+       that crashed the back bar and the entire page. */
+    const Icon = window.Icon || function Icon({ name, size = 16, style }) {
+      const glyphs = { search:"🔍", close:"✕", layers:"▣", spark:"✦", magnet:"◎",
+        check:"✓", eye:"◉", arrowRight:"→", arrowUp:"↑" };
+      return (
+        <span aria-hidden="true" style={{ display:"inline-flex", width:size, height:size,
+          alignItems:"center", justifyContent:"center", fontSize:Math.max(11, size - 3),
+          lineHeight:1, ...style }}>
+          {glyphs[name] || "•"}
+        </span>
+      );
+    };
+
+    /* FIX #3 — Dependency-free Reveal. The old code preferred window.Reveal from
+       ui.jsx, whose animation depends on GSAP/ScrollTrigger — which this
+       page never loaded, so cards stayed at opacity 0 ("stuck" page).
+       This Reveal uses only IntersectionObserver + a watchdog timeout,
+       so content can NEVER stay hidden.                                */
+    function Reveal({ children, className = "", style = {}, delay = 0 }) {
+      const ref = React.useRef(null);
+      const [on, setOn] = React.useState(false);
+      React.useEffect(() => {
+        const el = ref.current;
+        if (!el || !("IntersectionObserver" in window)) { setOn(true); return; }
+        const io = new IntersectionObserver(entries => {
+          if (entries[0].isIntersecting) { setOn(true); io.disconnect(); }
+        }, { rootMargin: "0px 0px -8% 0px" });
+        io.observe(el);
+        const watchdog = setTimeout(() => setOn(true), 1500 + delay);
+        return () => { io.disconnect(); clearTimeout(watchdog); };
+      }, []);
+      return (
+        <div ref={ref} className={className}
+          style={{ ...style,
+            opacity: on ? 1 : 0,
+            transform: on ? "none" : "translateY(16px)",
+            transition: "opacity .55s ease " + delay + "ms, transform .55s ease " + delay + "ms" }}>
+          {children}
+        </div>
+      );
+    }
+
+    /* ── Constants ──────────────────────────────────────────────────── */
+    const FORM_CATS = ["General Creative", "Festival Creative", "Lead Generation Post"];
+    const ALL_CATS  = ["All", ...FORM_CATS];
+    const FILE_BASE = "uploads/portfolio_drive/";
+
+    /* ── normalizeItem — guarantees every required field's type ─────── */
+    function normalizeItem(raw) {
+      if (!raw || typeof raw !== "object") return null;
+      const image = raw.image || "";
+      const images = Array.isArray(raw.images)
+        ? raw.images
+        : (image ? [image] : []);
+      return {
+        ...raw,
+        id:          raw.id || raw.title || ("item-" + Math.random().toString(36).slice(2)),
+        title:       raw.title       || "Untitled Project",
+        category:    raw.category    || raw.cat || "General Creative",
+        description: raw.description || raw.desc || "",
+        image,
+        images,
+        tools: Array.isArray(raw.tools)
+          ? raw.tools
+          : (raw.tools ? [String(raw.tools)] : []),
+        year: raw.year || "",
+      };
+    }
+
+    /* ── ErrorBoundary (generic, with optional fallback element) ────── */
+    class ErrorBoundary extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = { hasError: false };
+      }
+      static getDerivedStateFromError() { return { hasError: true }; }
+      componentDidCatch(err, info) {
+        console.error("[Gallery] Render error:", err, info?.componentStack);
+      }
+      render() {
+        if (this.state.hasError) {
+          if (this.props.fallback) return this.props.fallback;
+          return (
+            <div style={{ padding: "24px 20px", textAlign: "center",
+              color: "var(--ink-mut)", fontFamily: "var(--sans)", fontSize: "14px",
+              border: "1px solid var(--hairline)", borderRadius: "14px",
+              background: "var(--surface)" }}>
+              <p style={{ marginBottom: "12px" }}>⚠ Could not display this project.</p>
+              <button
+                onClick={() => this.setState({ hasError: false })}
+                style={{ padding: "6px 18px", borderRadius: "8px", cursor: "pointer",
+                  border: "1px solid var(--gold)", background: "transparent",
+                  color: "var(--gold)", fontFamily: "var(--sans)", fontSize: "13px" }}>
+                Retry
+              </button>
+            </div>
+          );
+        }
+        return this.props.children;
+      }
+    }
+
+    /* FIX #4 — Built-in fallback project viewer.
+       Even if app/work.jsx is missing or its ProjectModal crashes,
+       clicking a card ALWAYS opens this viewer. No silent failures.  */
+    function FallbackProjectModal({ item, items, onClose, onNav }) {
+      const safe = normalizeItem(item) || { title: "", images: [], tools: [] };
+      const imgs = safe.images.length ? safe.images : (safe.image ? [safe.image] : []);
+      const list = Array.isArray(items) ? items : [];
+      const pos  = list.findIndex(p => (p.id || p.title) === (safe.id || safe.title));
+      const [idx, setIdx] = React.useState(0);
+
+      React.useEffect(() => { setIdx(0); }, [safe.id, safe.title]);
+
+      const nextImg = React.useCallback(
+        () => setIdx(i => (imgs.length ? (i + 1) % imgs.length : 0)), [imgs.length]);
+      const prevImg = React.useCallback(
+        () => setIdx(i => (imgs.length ? (i - 1 + imgs.length) % imgs.length : 0)), [imgs.length]);
+
+      React.useEffect(() => {
+        const onKey = e => {
+          if (e.key === "Escape")     onClose();
+          if (e.key === "ArrowRight") nextImg();
+          if (e.key === "ArrowLeft")  prevImg();
+        };
+        document.addEventListener("keydown", onKey);
+        const prevOverflow = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
+        return () => {
+          document.removeEventListener("keydown", onKey);
+          document.body.style.overflow = prevOverflow;
+        };
+      }, [onClose, nextImg, prevImg]);
+
+      const goProject = dir => {
+        if (pos < 0 || !onNav) return;
+        const target = list[pos + dir];
+        if (target) onNav(target);
+      };
+
+      return ReactDOM.createPortal(
+        <div className="gvf-overlay"
+          onClick={e => e.target === e.currentTarget && onClose()}
+          role="dialog" aria-modal="true" aria-label={safe.title}>
+          <div className="gvf-box">
+            <button className="gvf-close" onClick={onClose} aria-label="Close">✕</button>
+
+            <div className="gvf-img-wrap">
+              {imgs.length > 0 ? (
+                <img key={imgs[idx]} className="gvf-img" src={imgs[idx]} alt={safe.title}
+                  onError={e => { e.currentTarget.style.opacity = "0.15"; }} />
+              ) : (
+                <div style={{ padding:"60px 20px", color:"var(--ink-mut,#999)",
+                  fontFamily:"var(--sans,sans-serif)", fontSize:"14px" }}>
+                  No image available
+                </div>
+              )}
+              {imgs.length > 1 && (
+                <React.Fragment>
+                  <button className="gvf-nav gvf-prev" onClick={prevImg} aria-label="Previous image">&#8249;</button>
+                  <button className="gvf-nav gvf-next" onClick={nextImg} aria-label="Next image">&#8250;</button>
+                  <span className="gvf-counter">{idx + 1} / {imgs.length}</span>
+                </React.Fragment>
+              )}
+            </div>
+
+            <h2 className="gvf-title">{safe.title}</h2>
+            {safe.description ? <p className="gvf-desc">{safe.description}</p> : null}
+
+            <div className="gvf-meta">
+              <span className="gvf-chip" style={{ borderColor:"var(--gold,#c9a35c)",
+                color:"var(--gold,#c9a35c)" }}>{safe.category}</span>
+              {safe.year ? <span className="gvf-chip">{safe.year}</span> : null}
+              {safe.tools.map(t => <span key={t} className="gvf-chip">{t}</span>)}
+            </div>
+
+            {list.length > 1 && pos >= 0 && (
+              <div className="gvf-projnav">
+                <button className="gvf-projbtn" disabled={pos <= 0}
+                  onClick={() => goProject(-1)}>&larr; Previous project</button>
+                <button className="gvf-projbtn" disabled={pos >= list.length - 1}
+                  onClick={() => goProject(1)}>Next project &rarr;</button>
+              </div>
+            )}
+          </div>
+        </div>,
+        document.body
+      );
+    }
+
+    /* ── ModalHost: prefer the real ProjectModal, fall back safely ──── */
+    function ModalHost(props) {
+      const RealModal = getProjectModal();
+      if (!RealModal) {
+        console.warn("[Gallery] window.ProjectModal unavailable — using fallback viewer. Check that app/work.jsx loaded without errors.");
+        return <FallbackProjectModal {...props} />;
+      }
+      return (
+        <ErrorBoundary fallback={<FallbackProjectModal {...props} />}>
+          <RealModal {...props} />
+        </ErrorBoundary>
+      );
+    }
+
+    /* ── Tool selector — chips + dropdown ───────────────────────────── */
+    function ToolSelector({ value, onChange }) {
+      const COMMON_TOOLS = getCommonTools();
+      const safeValue = Array.isArray(value) ? value : [];
+      const [open, setOpen] = React.useState(false);
+      const avail = COMMON_TOOLS.filter(t => !safeValue.includes(t));
+
+      React.useEffect(() => {
+        if (!open) return;
+        const onDoc = e => { if (!e.target.closest(".ts-root")) setOpen(false); };
+        document.addEventListener("mousedown", onDoc);
+        return () => document.removeEventListener("mousedown", onDoc);
+      }, [open]);
+
+      return (
+        <div className="ts-root">
+          <div className="ts-chips">
+            {safeValue.map(t => (
+              <span key={t} className="tool tool-editable">
+                {t}
+                <button className="tool-remove-btn"
+                  onClick={() => onChange(safeValue.filter(x => x !== t))}>×</button>
+              </span>
+            ))}
+
+            {avail.length > 0 && (
+              <div style={{ position: "relative" }}>
+                <button className="tool-add-btn" onClick={() => setOpen(o => !o)}>
+                  + Add Tool
+                </button>
+                {open && (
+                  <div className="tool-dropdown tool-dropdown-up">
+                    {avail.map(t => (
+                      <button key={t} className="tool-dropdown-item"
+                        onClick={() => { onChange([...safeValue, t]); setOpen(false); }}>
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {safeValue.length === 0 && !open && (
+              <span style={{ color: "var(--ink-mut)", fontSize: "13px" }}>
+                Click "+ Add Tool" to select
+              </span>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    /* ── File Browser — folder list + image grid ────────────────────── */
+    function FileBrowser({ selected, onSelect, initialFolder }) {
+      const fileTree = window.PORTFOLIO_FILES || {};
+      const folders  = Object.keys(fileTree);
+
+      const autoFolder = React.useMemo(() => {
+        if (initialFolder) return initialFolder;
+        const first = (selected || [])[0];
+        if (!first) return folders[0] || "";
+        const m = first.match(/portfolio_drive\/([^/]+)\//);
+        return (m && fileTree[m[1]]) ? m[1] : (folders[0] || "");
+      }, []);
+
+      const [activeFolder, setActiveFolder] = React.useState(autoFolder);
+      const [search,       setSearch]       = React.useState("");
+
+      const filteredFolders = folders.filter(f =>
+        f.toLowerCase().includes(search.toLowerCase())
+      );
+      const files = fileTree[activeFolder] || [];
+
+      return (
+        <div className="fb-root">
+          <div className="fb-folders">
+            <div className="fb-search-wrap">
+              <Icon name="search" size={13} />
+              <input className="fb-search" type="text" placeholder="Search folders…"
+                value={search} onChange={e => setSearch(e.target.value)} />
+            </div>
+            <div className="fb-folder-list">
+              {filteredFolders.map(f => (
+                <button key={f}
+                  className={"fb-folder-btn" + (f === activeFolder ? " on" : "")}
+                  onClick={() => setActiveFolder(f)} title={f}>
+                  <span className="fb-folder-ico">📁</span>
+                  <span className="fb-folder-name">{f}</span>
+                  <span className="fb-folder-count">{(fileTree[f] || []).length}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="fb-files">
+            <div className="fb-files-header">
+              <span className="fb-files-title">{activeFolder}</span>
+              <span className="fb-files-info">Ctrl+click for multi-select</span>
+            </div>
+            <div className="fb-grid">
+              {files.map(fname => {
+                const path    = FILE_BASE + activeFolder + "/" + fname;
+                const isOn    = (selected || []).includes(path);
+                const isCover = selected?.[0] === path;
+                return (
+                  <button key={fname} className={"fb-img-btn" + (isOn ? " on" : "")}
+                    onClick={e => {
+                      if (e.ctrlKey || e.metaKey) {
+                        onSelect(prev => (prev || []).includes(path)
+                          ? prev.filter(p => p !== path)
+                          : [...(prev || []), path]);
+                      } else {
+                        onSelect([path]);
+                      }
+                    }} title={fname}>
+                    <img src={path} alt={fname} loading="lazy"
+                      onError={e => { e.currentTarget.parentElement.style.display = "none"; }} />
+                    {isCover && <span className="fb-cover-tag">Cover</span>}
+                    {isOn && !isCover && <span className="fb-check">✓</span>}
+                    <span className="fb-fname">{fname}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    /* ── Project Form Modal (Add mode) ──────────────────────────────── */
+    function ProjectFormModal({ onSave, onClose }) {
+      const [imgTab,    setImgTab]  = React.useState("browse");
+      const [selFiles,  setSelFiles] = React.useState([]);
+      const [uploadSrc, setUpSrc]   = React.useState(null);
+      const [form, setForm] = React.useState({
+        title:       "",
+        category:    FORM_CATS[0],
+        description: "",
+        tools:       [],
+        year:        "2025",
+      });
+      const [error, setError] = React.useState("");
+
+      const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
+
+      const handleFile = e => {
+        const file = e.target.files?.[0]; if (!file) return;
+        const reader = new FileReader();
+        reader.onload = ev => setUpSrc(ev.target.result);
+        reader.readAsDataURL(file);
+      };
+
+      const coverImg = imgTab === "upload" ? uploadSrc : (selFiles[0] || null);
+      const allImgs  = imgTab === "upload"
+        ? (uploadSrc ? [uploadSrc] : [])
+        : selFiles;
+
+      const submit = () => {
+        if (!form.title.trim()) { setError("Title is required."); return; }
+        onSave(normalizeItem({
+          id:          "custom-" + Date.now(),
+          title:       form.title.trim(),
+          category:    form.category,
+          description: form.description.trim(),
+          tools:       form.tools,
+          year:        form.year || "2025",
+          image:       coverImg || "",
+          images:      allImgs,
+        }));
+        onClose();
+      };
+
+      React.useEffect(() => {
+        const onKey = e => { if (e.key === "Escape") onClose(); };
+        document.addEventListener("keydown", onKey);
+        return () => document.removeEventListener("keydown", onKey);
+      }, []);
+
+      return ReactDOM.createPortal(
+        <div className="pv-overlay"
+          onClick={e => e.target === e.currentTarget && onClose()}
+          role="dialog" aria-modal="true">
+          <div className="add-modal glass">
+
+            <div className="add-modal-header">
+              <h2>Add New Project</h2>
+              <button className="pv-close glass" onClick={onClose} aria-label="Close">
+                <Icon name="close" size={18} />
+              </button>
+            </div>
+
+            <div className="add-modal-body">
+
+              <div className="add-field">
+                <label className="add-label">Images</label>
+                <div className="add-img-tabs">
+                  <button className={"add-img-tab" + (imgTab === "browse" ? " on" : "")}
+                    onClick={() => setImgTab("browse")}>
+                    <Icon name="layers" size={13} /> Browse Files
+                  </button>
+                  <button className={"add-img-tab" + (imgTab === "upload" ? " on" : "")}
+                    onClick={() => setImgTab("upload")}>
+                    <Icon name="arrowUp" size={13} /> Upload New
+                  </button>
+                </div>
+
+                {imgTab === "browse" && (
+                  <div className="add-browser-wrap">
+                    <FileBrowser selected={selFiles} onSelect={setSelFiles} />
+                    {selFiles.length > 0 && (
+                      <div className="fb-selection-bar">
+                        <Icon name="check" size={13} />
+                        <span>
+                          {selFiles.length === 1
+                            ? "1 image selected as cover"
+                            : selFiles.length + " images — first is cover"}
+                        </span>
+                        <button className="fb-clear-btn" onClick={() => setSelFiles([])}>Clear</button>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {imgTab === "upload" && (
+                  <div className="add-img-upload"
+                    onClick={() => document.getElementById("add-file-input")?.click()}>
+                    {uploadSrc
+                      ? <img src={uploadSrc} alt="preview"
+                          style={{ width:"100%", height:"100%", objectFit:"cover", borderRadius:"8px" }} />
+                      : <div className="add-img-ph">
+                          <Icon name="layers" size={28} style={{ opacity:.35 }} />
+                          <span>Click to upload image</span>
+                          <span className="add-img-ph-sub">PNG, JPG, WEBP</span>
+                        </div>
+                    }
+                    <input id="add-file-input" type="file" accept="image/*"
+                      style={{ display:"none" }} onChange={handleFile} />
+                  </div>
+                )}
+              </div>
+
+              <div className="add-field">
+                <label className="add-label">
+                  Project Title <span className="add-req">*</span>
+                </label>
+                <input className="add-input" type="text"
+                  placeholder="e.g. Summer Travel Campaign"
+                  value={form.title}
+                  onChange={e => { set("title", e.target.value); setError(""); }} />
+                {error && <span className="add-error">{error}</span>}
+              </div>
+
+              <div className="add-field">
+                <label className="add-label">Category</label>
+                <div className="add-cat-pills">
+                  {FORM_CATS.map(c => (
+                    <button key={c}
+                      className={"add-cat-pill" + (form.category === c ? " on" : "")}
+                      onClick={() => set("category", c)}>
+                      {c === "General Creative"     && <Icon name="layers"  size={13} />}
+                      {c === "Festival Creative"    && <Icon name="spark"   size={13} />}
+                      {c === "Lead Generation Post" && <Icon name="magnet"  size={13} />}
+                      {c}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="add-field">
+                <label className="add-label">Description</label>
+                <textarea className="add-input add-textarea"
+                  placeholder="Brief description of the project…"
+                  value={form.description}
+                  onChange={e => set("description", e.target.value)}
+                  rows={3} />
+              </div>
+
+              <div className="add-field">
+                <label className="add-label">Tools Used</label>
+                <ToolSelector
+                  value={form.tools}
+                  onChange={tools => set("tools", tools)}
+                />
+              </div>
+
+              <div className="add-field">
+                <label className="add-label">Year</label>
+                <input className="add-input" type="text" placeholder="2025"
+                  value={form.year} onChange={e => set("year", e.target.value)} />
+              </div>
+            </div>
+
+            <div className="add-modal-footer">
+              <button className="add-cancel-btn" onClick={onClose}>Cancel</button>
+              <button className="add-submit-btn" onClick={submit}>
+                <span style={{ fontSize:"16px", fontWeight:700 }}>+</span> Add Project
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      );
+    }
+
+    /* ── Gallery Card — fully defensive, never crashes ──────────────── */
+    function GalleryCard({ item, onOpen }) {
+      const safeItem = React.useMemo(() => normalizeItem(item), [item]);
+
+      const category = safeItem.category;
+      const catMeta  = getCatMeta()[category] || { color: "var(--gold)" };
+      const hasImg   = !!(safeItem.image && safeItem.image.trim());
+      const imgCount = safeItem.images.length > 1 ? safeItem.images.length : null;
+
+      const handleClick = React.useCallback((e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onOpen(safeItem);
+      }, [safeItem, onOpen]);
+
+      return (
+        <article
+          className="pf-card glass"
+          onClick={handleClick}
+          onKeyDown={e => e.key === "Enter" && handleClick(e)}
+          role="button" tabIndex={0}
+          aria-label={"Open " + safeItem.title}
+        >
+          <div className="pf-thumb" style={{ "--cc": catMeta.color }}>
+            {hasImg ? (
+              <img
+                className="pf-img"
+                src={safeItem.image}
+                alt={safeItem.title}
+                loading="lazy"
+                onError={e => { e.currentTarget.style.display = "none"; }}
+              />
+            ) : null}
+            <div className="pf-ph ph" style={{ display: hasImg ? "none" : "flex" }} />
+            <div className="pf-badge" style={{ "--cc": catMeta.color }}>{category}</div>
+            {imgCount && (
+              <div className="gallery-img-count-badge">
+                <Icon name="layers" size={11} />{imgCount}
+              </div>
+            )}
+            <div className="pf-hover-overlay">
+              <div className="pf-view-ring"><Icon name="eye" size={24} /></div>
+              <span className="pf-view-label">View Project</span>
+            </div>
+          </div>
+
+          <div className="pf-footer">
+            <div className="pf-footer-main">
+              <h3 className="pf-title">{safeItem.title}</h3>
+              <div className="pf-tools">
+                {safeItem.tools.slice(0, 3).map(t => (
+                  <span key={t} className="tool">{t}</span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </article>
+      );
+    }
+
+    /* ── Gallery App ─────────────────────────────────────────────────── */
+    function GalleryApp() {
+      const [projects,   setProjects]   = React.useState([]);
+      const [activeItem, setActiveItem] = React.useState(null);
+      const [activeCat,  setActiveCat]  = React.useState("All");
+      const [loaded,     setLoaded]     = React.useState(false);
+      const [addOpen,    setAddOpen]    = React.useState(false);
+      const [theme,      setTheme]      = React.useState(() => {
+        try { return localStorage.getItem("pv-theme") || "dark"; }
+        catch (e) { return "dark"; }
+      });
+
+      React.useEffect(() => {
+        document.documentElement.setAttribute("data-theme", theme);
+        try { localStorage.setItem("pv-theme", theme); } catch (e) {}
+      }, [theme]);
+
+      React.useEffect(() => {
+        try {
+          let data = [];
+          const inline = window.PORTFOLIO_DATA;
+
+          /* 1. Load base data and normalize immediately */
+          if (Array.isArray(inline) && inline.length) {
+            data = inline.map(normalizeItem).filter(Boolean);
+          } else {
+            console.warn("[Gallery] window.PORTFOLIO_DATA is empty or missing — check assets/portfolio/portfolio-data.js");
+          }
+
+          /* 2. Apply whole-project deletions */
+          const deleted = JSON.parse(localStorage.getItem("pv-deleted") || "[]");
+          data = data.filter(p => !deleted.includes(p.id || p.title));
+
+          /* 3. Apply per-project edits — re-normalize after merge */
+          const edits = JSON.parse(localStorage.getItem("pv-project-edits") || "{}");
+          data = data.map(p => {
+            const key  = p.id || p.title;
+            const edit = edits[key];
+            return edit ? normalizeItem({ ...p, ...edit }) : p;
+          }).filter(Boolean);
+
+          /* 4. Append user-added projects — normalize those too */
+          const added = JSON.parse(localStorage.getItem("pv-added") || "[]");
+          const addedNorm = Array.isArray(added)
+            ? added.map(normalizeItem).filter(Boolean)
+            : [];
+
+          setProjects([...data, ...addedNorm]);
+        } catch (err) {
+          console.error("[Gallery] Failed to load data:", err);
+          setProjects([]);
+        } finally {
+          setLoaded(true);
+        }
+      }, []);
+
+      const filtered = React.useMemo(
+        () => activeCat === "All"
+          ? projects
+          : projects.filter(p => (p.category || "General Creative") === activeCat),
+        [projects, activeCat]
+      );
+
+      const handleSaveProject = React.useCallback((newItem) => {
+        const normalized = normalizeItem(newItem);
+        if (!normalized) return;
+        setProjects(prev => [...prev, normalized]);
+        try {
+          const added = JSON.parse(localStorage.getItem("pv-added") || "[]");
+          added.push(normalized);
+          localStorage.setItem("pv-added", JSON.stringify(added));
+        } catch (e) {
+          console.warn("[Gallery] Could not persist new project:", e);
+        }
+      }, []);
+
+      const handleOpenItem = React.useCallback((item) => {
+        setActiveItem(item);
+      }, []);
+
+      const handleCloseModal = React.useCallback(() => {
+        setActiveItem(null);
+      }, []);
+
+      return (
+        <div className="gallery-page">
+
+          {/* ── Back bar ── */}
+          <nav className="gallery-back-bar">
+            <a href="Paramasivan%20V%20-%20Portfolio.html" className="gallery-back-btn">
+              <Icon name="arrowRight" size={15} style={{ transform: "rotate(180deg)" }} />
+              Back to Portfolio
+            </a>
+            <span className="gallery-back-title">Paramasivan V — Portfolio Gallery</span>
+            <span className="gallery-back-count">{filtered.length} Projects</span>
+          </nav>
+
+          {/* ── Toolbar ── */}
+          <div className="gallery-toolbar">
+            <div className="gallery-filter-bar">
+              {ALL_CATS.map(cat => (
+                <button key={cat}
+                  className={"chip" + (activeCat === cat ? " on" : "")}
+                  onClick={() => setActiveCat(cat)}>
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* ── Grid ── */}
+          <div className="gallery-wrap">
+            {!loaded && (
+              <div className="pf-skeleton-grid" style={{ gridTemplateColumns: "repeat(4, 1fr)" }}>
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div key={i} className="pf-skeleton-card" style={{ height: "260px" }} />
+                ))}
+              </div>
+            )}
+
+            {loaded && filtered.length === 0 && (
+              <div className="gallery-empty">
+                <Icon name="search" size={40} style={{ opacity: 0.35 }} />
+                <p>No projects in this category.</p>
+              </div>
+            )}
+
+            {loaded && filtered.length > 0 && (
+              <div className="gallery-grid">
+                {filtered.map((p, i) => (
+                  <Reveal key={p.id || p.title} delay={Math.min(i * 40, 500)} className="pf-cell">
+                    <ErrorBoundary>
+                      <GalleryCard item={p} onOpen={handleOpenItem} />
+                    </ErrorBoundary>
+                  </Reveal>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* ── Project viewer — real modal if available, fallback otherwise ── */}
+          {activeItem && (
+            <ModalHost
+              item={activeItem}
+              items={filtered}
+              onClose={handleCloseModal}
+              onNav={setActiveItem}
+            />
+          )}
+
+          {/* ── Add project modal ── */}
+          {addOpen && (
+            <ProjectFormModal
+              onSave={handleSaveProject}
+              onClose={() => setAddOpen(false)}
+            />
+          )}
+
+          {/* ── Footer ── */}
+          <footer style={{
+            textAlign: "center", padding: "60px 20px 40px",
+            color: "var(--ink-mut)", fontFamily: "var(--sans)", fontSize: "13px"
+          }}>
+            <p>© 2025 Paramasivan V — Design &amp; Digital Marketing Executive</p>
+            <p style={{ marginTop: "8px" }}>
+              <a href="Paramasivan%20V%20-%20Portfolio.html"
+                style={{ color: "var(--gold)", textDecoration: "none" }}>
+                ← Back to main portfolio
+              </a>
+            </p>
+          </footer>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("gallery-root")).render(
+      <ErrorBoundary>
+        <GalleryApp />
+      </ErrorBoundary>
+    );
+  </script>
+</body>
+</html>
