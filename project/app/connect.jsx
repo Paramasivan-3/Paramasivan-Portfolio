@@ -98,6 +98,29 @@ function Contact() {
           <SectionHead kicker="Get In Touch"
             title="Let's create something that travels far."
             sub="Open to roles, freelance projects and collaborations with travel brands and agencies." />
+          <div className="contact-rows">
+            <div className="ct-row">
+              <div className="ct-ico"><Icon name="mail" size={22} /></div>
+              <div>
+                <span className="ct-k">Email</span>
+                <a href={"mailto:" + p.email} className="ct-v">{p.email}</a>
+              </div>
+            </div>
+            <div className="ct-row">
+              <div className="ct-ico"><Icon name="phone" size={22} /></div>
+              <div>
+                <span className="ct-k">Phone</span>
+                <a href={"tel:+" + p.phoneRaw} className="ct-v">{p.phone}</a>
+              </div>
+            </div>
+            <div className="ct-row">
+              <div className="ct-ico"><Icon name="pin" size={22} /></div>
+              <div>
+                <span className="ct-k">Location</span>
+                <span className="ct-v">{p.location}</span>
+              </div>
+            </div>
+          </div>
           <Reveal className="contact-socials">
             <a href={p.linkedin} target="_blank" rel="noopener" className="soc-btn"><Icon name="linkedin" size={18} /></a>
             <a href={p.behance} target="_blank" rel="noopener" className="soc-btn"><Icon name="behance" size={18} /></a>
@@ -114,29 +137,4 @@ function Contact() {
   );
 }
 
-function Footer() {
-  const D = window.DATA;
-  const go = (e, id) => { e.preventDefault(); const el = document.getElementById(id); if (el) window.scrollTo({ top: el.getBoundingClientRect().top + scrollY - 72, behavior: "smooth" }); };
-  return (
-    <footer className="ft">
-      <div className="wrap ft-inner">
-        <div className="ft-brand">
-          <a href="#home" className="brand" onClick={(e) => go(e, "home")}>
-            <span className="brand-mark serif">PV</span>
-            <span className="brand-txt"><strong>Paramasivan&nbsp;V</strong><em>Creative & Social Media Design</em></span>
-          </a>
-          <p className="ft-tag">Designing creative visuals &amp; social media content for travel brands.</p>
-        </div>
-        <nav className="ft-links">
-          {D.nav.map((l) => <a key={l.id} href={"#" + l.id} onClick={(e) => go(e, l.id)}>{l.label}</a>)}
-        </nav>
-      </div>
-      <div className="wrap ft-bottom">
-        <span>© 2026 Paramasivan V. All Rights Reserved.</span>
-        <span className="ft-made">Crafted with care in Coimbatore, Tamil Nadu</span>
-      </div>
-    </footer>
-  );
-}
-
-Object.assign(window, { Testimonials, Contact, Footer });
+Object.assign(window, { Testimonials, Contact });

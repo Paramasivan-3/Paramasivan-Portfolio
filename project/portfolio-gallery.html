@@ -671,6 +671,139 @@
       );
     }
 
+    /* ── CylHCard — card for horizontal coverflow cylinder ─────────────── */
+    const CARD_W = 300;
+    const CARD_H = 400;
+    const GAP    = 24;
+    const STEP   = CARD_W + GAP; /* 324px per slot */
+
+    function CylHCard({ item, onOpen }) {
+      const safe  = React.useMemo(() => normalizeItem(item), [item]);
+      if (!safe) return null;
+      const color  = (getCatMeta()[safe.category] || {}).color || "var(--gold)";
+      const hasImg = !!(safe.image && safe.image.trim());
+      return (
+        <div className="cyl-card" onClick={() => onOpen(safe)}>
+          {hasImg
+            ? <img className="cyl-img" src={safe.image} alt={safe.title}
+                onError={e => { e.currentTarget.style.display = "none"; }} />
+            : <div className="cyl-ph" style={{ "--cc": color }} />
+          }
+          <span className="cyl-badge" style={{ "--cc": color }}>{safe.category}</span>
+          <div className="cyl-overlay">
+            <div className="cyl-footer">
+              <h3 className="cyl-title">{safe.title}</h3>
+              <span className="cyl-cta">View Project →</span>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    /* ── CylinderGallery — horizontal coverflow that scrolls cylindrically ── */
+    function CylinderGallery({ items, onOpen }) {
+      const wrapRef  = React.useRef(null);
+      const trackRef = React.useRef(null);
+      const cardRefs = React.useRef([]);
+      const stRef    = React.useRef(null);
+      const [cur, setCur] = React.useState(0);
+
+      React.useEffect(() => {
+        if (!items.length) return;
+        cardRefs.current = cardRefs.current.slice(0, items.length);
+        const wrap  = wrapRef.current;
+        const track = trackRef.current;
+        if (!wrap || !track) return;
+
+        let tries = 0;
+        const boot = () => {
+          if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+            if (++tries < 30) { setTimeout(boot, 200); return; }
+            return;
+          }
+          gsap.registerPlugin(ScrollTrigger);
+          if (stRef.current) { stRef.current.kill(); stRef.current = null; }
+          gsap.set(track, { x: 0 });
+
+          /* 24px matches padding-left on .cylh-track */
+          const GUTTER_L = 24;
+
+          /* Scroll until last card centre aligns with viewport centre.
+             Card i centre at translateX=tx: GUTTER_L + i*STEP + CARD_W/2 + tx */
+          const getMaxTx = () =>
+            GUTTER_L + (items.length - 1) * STEP + CARD_W / 2 - window.innerWidth / 2;
+
+          const updateCards = (tx) => {
+            const vwH = window.innerWidth / 2;
+            cardRefs.current.forEach((el, i) => {
+              if (!el) return;
+              const dist   = GUTTER_L + i * STEP + CARD_W / 2 + tx - vwH;
+              const rotY   = -dist * 0.065;
+              const scale  = Math.max(0.70, 1 - Math.abs(dist) * 0.00055);
+              const bright = Math.max(0.40, 1 - Math.abs(dist) * 0.00090);
+              gsap.set(el, { rotateY: rotY, scale, filter: "brightness(" + bright + ")" });
+            });
+            const idx = Math.round((window.innerWidth / 2 - GUTTER_L - CARD_W / 2 - tx) / STEP);
+            setCur(Math.max(0, Math.min(items.length - 1, idx)));
+          };
+
+          updateCards(0);
+
+          stRef.current = gsap.to(track, {
+            x: () => -getMaxTx(),
+            ease: "none",
+            scrollTrigger: {
+              trigger: wrap,
+              pin: true,
+              scrub: 1.2,
+              start: "top top",
+              end: () => "+=" + getMaxTx(),
+              invalidateOnRefresh: true,
+              anticipatePin: 1,
+              onUpdate() {
+                const tx = gsap.getProperty(track, "x") || 0;
+                updateCards(tx);
+              }
+            }
+          });
+        };
+
+        setTimeout(boot, 150);
+        return () => { if (stRef.current) { stRef.current.kill(); stRef.current = null; } };
+      }, [items]);
+
+      return (
+        <div ref={wrapRef} className="cylh-section">
+
+          <div className="cylh-scene">
+            <div ref={trackRef} className="cylh-track">
+              {items.map((item, i) => (
+                <div key={(item.id || item.title) + i}
+                     className="cylh-card-wrap"
+                     ref={el => { cardRefs.current[i] = el; }}>
+                  <CylHCard item={item} onOpen={onOpen} />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Left / right edge fade */}
+          <div className="cyl-vignette cyl-vignette--h" aria-hidden="true" />
+
+          {/* Counter — right side */}
+          <div className="cyl-counter">
+            <span className="cyl-cur">{String(cur + 1).padStart(2, "0")}</span>
+            <span className="cyl-sep">──</span>
+            <span className="cyl-tot">{String(items.length).padStart(2, "0")}</span>
+          </div>
+
+          {/* Scroll hint */}
+          <div className="cylh-hint">← Scroll to browse →</div>
+
+        </div>
+      );
+    }
+
     /* ── Gallery App ─────────────────────────────────────────────────── */
     function GalleryApp() {
       const [projects,   setProjects]   = React.useState([]);
@@ -768,48 +901,31 @@
             <span className="gallery-back-count">{filtered.length} Projects</span>
           </nav>
 
-          {/* ── Toolbar ── */}
-          <div className="gallery-toolbar">
-            <div className="gallery-filter-bar">
-              {ALL_CATS.map(cat => (
-                <button key={cat}
-                  className={"chip" + (activeCat === cat ? " on" : "")}
-                  onClick={() => setActiveCat(cat)}>
-                  {cat}
-                </button>
+          {/* ── Loading skeleton ── */}
+          {!loaded && (
+            <div style={{ display:"flex", gap:"16px", overflow:"hidden",
+              padding:"20px var(--gut)", justifyContent:"center" }}>
+              {Array.from({length:3}).map((_,i) => (
+                <div key={i} className="pf-skeleton-card"
+                  style={{width:"300px",height:"400px",flexShrink:0,borderRadius:"20px"}} />
               ))}
             </div>
-          </div>
+          )}
 
-          {/* ── Grid ── */}
-          <div className="gallery-wrap">
-            {!loaded && (
-              <div className="pf-skeleton-grid" style={{ gridTemplateColumns: "repeat(4, 1fr)" }}>
-                {Array.from({ length: 8 }).map((_, i) => (
-                  <div key={i} className="pf-skeleton-card" style={{ height: "260px" }} />
-                ))}
-              </div>
-            )}
-
-            {loaded && filtered.length === 0 && (
+          {/* ── Empty state ── */}
+          {loaded && filtered.length === 0 && (
+            <div className="gallery-wrap">
               <div className="gallery-empty">
                 <Icon name="search" size={40} style={{ opacity: 0.35 }} />
                 <p>No projects in this category.</p>
               </div>
-            )}
+            </div>
+          )}
 
-            {loaded && filtered.length > 0 && (
-              <div className="gallery-grid">
-                {filtered.map((p, i) => (
-                  <Reveal key={p.id || p.title} delay={Math.min(i * 40, 500)} className="pf-cell">
-                    <ErrorBoundary>
-                      <GalleryCard item={p} onOpen={handleOpenItem} />
-                    </ErrorBoundary>
-                  </Reveal>
-                ))}
-              </div>
-            )}
-          </div>
+          {/* ── Horizontal cylinder (coverflow) ── */}
+          {loaded && filtered.length > 0 && (
+            <CylinderGallery items={filtered} onOpen={handleOpenItem} />
+          )}
 
           {/* ── Project viewer — real modal if available, fallback otherwise ── */}
           {activeItem && (

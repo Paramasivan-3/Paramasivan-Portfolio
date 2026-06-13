@@ -1,13 +1,13 @@
 /* Services + Portfolio → window */
 
 const CAT_META = {
-  "Festival Creatives":        { color: "#06B6D4", icon: "spark"  },
+  "Festival Creatives":        { color: "#A78BFA", icon: "spark"  },
   "Travel Promotions":         { color: "#22D3EE", icon: "globe"  },
-  "Lead Generation Creatives": { color: "#0891B2", icon: "magnet" },
-  "Social Media Designs":      { color: "#22D3EE", icon: "share"  },
+  "Lead Generation Creatives": { color: "#34D399", icon: "magnet" },
+  "Social Media Designs":      { color: "#FB923C", icon: "share"  },
   "General Creative":          { color: "#22D3EE", icon: "layers" },
-  "Festival Creative":         { color: "#06B6D4", icon: "spark"  },
-  "Lead Generation Post":      { color: "#0891B2", icon: "magnet" },
+  "Festival Creative":         { color: "#A78BFA", icon: "spark"  },
+  "Lead Generation Post":      { color: "#34D399", icon: "magnet" },
   "Website Content":           { color: "#22D3EE", icon: "globe"  },
 };
 const CATEGORIES = [
@@ -447,14 +447,66 @@ function PortfolioCard({ item, onOpen, isActive }) {
   );
 }
 
+/* ── WorkGroup — one category's cards with GSAP scroll-reveal ───────── */
+function WorkGroup({ category, items, onOpen, activeItemKey }) {
+  const gridRef = useRef(null);
+  const catMeta = CAT_META[category] || { color: "var(--gold)", icon: "layers" };
+
+  useEffect(() => {
+    if (!gridRef.current || !items.length) return;
+    let tries = 0;
+    const init = () => {
+      if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+        if (++tries < 20) { setTimeout(init, 150); return; }
+        const cells = gridRef.current.querySelectorAll(".pf-cell");
+        cells.forEach(c => { c.style.opacity = "1"; c.style.transform = "none"; });
+        return;
+      }
+      gsap.registerPlugin(ScrollTrigger);
+      const cells = Array.from(gridRef.current.querySelectorAll(".pf-cell"));
+      gsap.fromTo(cells,
+        { opacity: 0, y: 36, scale: 0.96 },
+        { opacity: 1, y: 0, scale: 1,
+          duration: 0.65, ease: "power3.out",
+          stagger: { each: 0.09, from: "start" },
+          scrollTrigger: { trigger: gridRef.current, start: "top 90%", once: true }
+        }
+      );
+    };
+    setTimeout(init, 80);
+  }, [items]);
+
+  return (
+    <div className="work-group">
+      <div className="work-group-header">
+        <div className="work-group-badge" style={{ "--cc": catMeta.color }}>
+          <Icon name={catMeta.icon || "layers"} size={14} />
+          <span>{category}</span>
+        </div>
+        <span className="work-group-count">{items.length} works</span>
+        <div className="work-group-line" />
+      </div>
+      <div className="work-group-grid" ref={gridRef}>
+        {items.map((item, i) => {
+          const isActive = !!(activeItemKey &&
+            (item.id === activeItemKey || item.title === activeItemKey));
+          return (
+            <div key={item.id || item.title || i} className="pf-cell">
+              <PortfolioCard item={item} onOpen={onOpen} isActive={isActive} />
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 /* ── Work section ────────────────────────────────────────────────── */
 function Work() {
   const D = window.DATA;
-  const [allWork,        setAllWork]        = useState([]);
-  const [activeItem,     setActiveItem]     = useState(null);
-  const [insertAfterIdx, setInsertAfterIdx] = useState(-1);
-  const [loaded,         setLoaded]         = useState(false);
-  const gridRef = useRef(null);
+  const [allWork,    setAllWork]    = useState([]);
+  const [activeItem, setActiveItem] = useState(null);
+  const [loaded,     setLoaded]     = useState(false);
 
   useEffect(() => {
     const norm = raw => {
@@ -488,45 +540,22 @@ function Work() {
       .finally(() => setLoaded(true));
   }, []);
 
-  /* Escape to close */
+  /* Escape to close modal */
   useEffect(() => {
-    const onKey = e => {
-      if (e.key === "Escape" && activeItem) { setActiveItem(null); setInsertAfterIdx(-1); }
-    };
+    const onKey = e => { if (e.key === "Escape" && activeItem) setActiveItem(null); };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [activeItem]);
 
   const featured = allWork.slice(0, 6);
 
-  /* Open: detect which grid row was clicked → insert expand after last card in that row */
-  const handleCardOpen = (item, clickEvent) => {
-    /* Clicking active card closes it */
-    if (activeItem && (activeItem.id === item.id || activeItem.title === item.title)) {
-      setActiveItem(null); setInsertAfterIdx(-1); return;
-    }
+  const activeItemKey = activeItem ? (activeItem.id || activeItem.title) : null;
 
-    setActiveItem(item);
-
-    if (clickEvent && gridRef.current) {
-      try {
-        const cells     = Array.from(gridRef.current.querySelectorAll(".pf-cell"));
-        const clicked   = clickEvent.currentTarget.closest(".pf-cell");
-        const clickedIdx = cells.indexOf(clicked);
-        if (clickedIdx >= 0) {
-          const clickedTop = clicked.getBoundingClientRect().top;
-          let lastInRow = clickedIdx;
-          for (let j = clickedIdx + 1; j < cells.length; j++) {
-            if (Math.abs(cells[j].getBoundingClientRect().top - clickedTop) < 20) lastInRow = j;
-            else break;
-          }
-          setInsertAfterIdx(lastInRow);
-          return;
-        }
-      } catch (_) {}
-    }
-    setInsertAfterIdx(featured.length - 1);
-  };
+  const handleCardOpen = useCallback((item, _e) => {
+    setActiveItem(prev =>
+      prev && (prev.id === item.id || prev.title === item.title) ? null : item
+    );
+  }, []);
 
   return (
     <section id="work" className="work">
@@ -546,45 +575,42 @@ function Work() {
           </div>
         )}
 
-        {loaded && (
-          <div className="pf-masonry" ref={gridRef}>
+        {loaded && featured.length > 0 && (
+          <div className="pf-masonry">
             {featured.map((w, i) => {
-              const isActive = !!(activeItem &&
-                (activeItem.id === w.id || activeItem.title === w.title));
+              const isActive = !!(activeItemKey &&
+                (w.id === activeItemKey || w.title === activeItemKey));
               return (
-                <React.Fragment key={w.id || w.title}>
-                  {/* Plain div — CSS animation handles reveal, never resets opacity */}
-                  <div
-                    className={"pf-cell" + (isActive ? " pf-cell--active" : "")}
-                    style={{ animationDelay: Math.min(i * 60, 360) + "ms" }}>
+                <React.Fragment key={w.id || w.title || i}>
+                  <div className={"pf-cell" + (isActive ? " pf-cell--active" : "")}
+                       style={{ animationDelay: Math.min(i * 60, 360) + "ms" }}>
                     <PortfolioCard item={w} onOpen={handleCardOpen} isActive={isActive} />
                   </div>
-
-                  {/* Inline expand inserts after the last card in the clicked row */}
-                  {activeItem && insertAfterIdx === i && (
+                  {isActive && (
                     <InlineExpand
                       item={activeItem}
                       items={featured}
-                      onClose={() => { setActiveItem(null); setInsertAfterIdx(-1); }}
-                      onNav={next => setActiveItem(next)}
+                      onClose={() => setActiveItem(null)}
+                      onNav={setActiveItem}
                     />
                   )}
                 </React.Fragment>
               );
             })}
-
-            {allWork.length === 0 && (
-              <div className="pf-empty">
-                <Icon name="search" size={40} style={{ color: "var(--ink-mut)", opacity: 0.4 }} />
-                <p>No projects yet.</p>
-              </div>
-            )}
           </div>
         )}
 
-        {loaded && allWork.length > 6 && (
+        {loaded && allWork.length === 0 && (
+          <div className="pf-masonry">
+            <div className="pf-empty">
+              <Icon name="search" size={40} style={{ color: "var(--ink-mut)", opacity: 0.4 }} />
+              <p>No projects yet.</p>
+            </div>
+          </div>
+        )}
+
+        {loaded && allWork.length > 0 && (
           <div className="work-foot">
-            <p className="pf-foot-note">{allWork.length - 6} more projects in the full gallery</p>
             <a href="portfolio-gallery.html" className="pf-showmore-btn">
               <Icon name="layers" size={18} />
               <span>View Full Portfolio Gallery</span>
@@ -620,4 +646,140 @@ class ModalBoundary extends React.Component {
   }
 }
 
-Object.assign(window, { Services, Work, ProjectModal, PortfolioCard, CAT_META, ToolAdder, COMMON_TOOLS, ModalBoundary });
+/* ==========================================================================
+   HScrollCard — single card in the bento grid
+   ========================================================================== */
+function HScrollCard({ item }) {
+  const cat    = item.category || item.cat || "";
+  const meta   = CAT_META[cat] || {};
+  const color  = meta.color || "var(--gold)";
+  const hasImg = !!(item.image && item.image.trim());
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <div className="hsc-card" onClick={() => setOpen(true)}>
+        <div className="hsc-media">
+          {hasImg
+            ? <img src={item.image} alt={item.title} className="hsc-img" loading="lazy" />
+            : <div className="hsc-ph" style={{ "--cc": color }} />
+          }
+          <span className="hsc-badge" style={{ "--cc": color }}>{cat}</span>
+          <div className="hsc-overlay">
+            <span className="hsc-ico"><Icon name="eye" size={18} /></span>
+          </div>
+        </div>
+        <div className="hsc-footer">
+          <span className="hsc-title">{item.title}</span>
+          <span className="hsc-dot" style={{ background: color, color }} />
+        </div>
+      </div>
+
+      {open && <ProjectModal
+        item={item} items={[item]}
+        onClose={() => setOpen(false)}
+        onNav={() => {}}
+      />}
+    </>
+  );
+}
+
+/* ==========================================================================
+   HorizontalCreatives — Framer-style vertical bento grid with scroll animations
+   ========================================================================== */
+function HorizontalCreatives() {
+  const [items, setItems] = useState([]);
+  const gridRef           = useRef(null);
+
+  /* ── Load portfolio data ─────────────────────────────────────── */
+  useEffect(() => {
+    const norm = raw => {
+      if (!raw || typeof raw !== "object") return null;
+      return {
+        ...raw,
+        id:       raw.id    || raw.title || Math.random().toString(36).slice(2),
+        title:    raw.title || "Untitled",
+        category: raw.category || raw.cat || "General Creative",
+        image:    raw.image || "",
+        tools:    Array.isArray(raw.tools) ? raw.tools : [],
+      };
+    };
+    const useData = data => setItems(data.map(norm).filter(Boolean));
+    const inline = window.PORTFOLIO_DATA;
+    if (Array.isArray(inline) && inline.length) { useData(inline); return; }
+    fetch("assets/portfolio/portfolio.json")
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(useData)
+      .catch(() => useData((window.DATA && window.DATA.work) || []));
+  }, []);
+
+  /* ── GSAP scroll-triggered card animations ───────────────────── */
+  useEffect(() => {
+    if (!items.length) return;
+    const grid = gridRef.current;
+    if (!grid) return;
+
+    let tries = 0;
+    const init = () => {
+      if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+        if (++tries < 25) { setTimeout(init, 200); } return;
+      }
+      gsap.registerPlugin(ScrollTrigger);
+      const cards = Array.from(grid.querySelectorAll(".hsc-gi"));
+      cards.forEach((card, i) => {
+        gsap.fromTo(card,
+          { opacity: 0, y: 52 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.75,
+            ease: "power3.out",
+            delay: (i % 4) * 0.08,
+            scrollTrigger: {
+              trigger: card,
+              start: "top 90%",
+              once: true,
+            }
+          }
+        );
+      });
+    };
+    setTimeout(init, 120);
+  }, [items]);
+
+  if (!items.length) return null;
+
+  return (
+    <section id="creatives" className="hsc-section">
+      <div className="wrap">
+
+        {/* ── Header ───────────────────────────────────────────── */}
+        <div className="hsc-head-row">
+          <div className="hsc-header-left">
+            <span className="hsc-eyebrow-pill">
+              <span className="hsc-eyebrow-dot" />
+              Creative Showcase
+            </span>
+            <h2 className="hsc-h2">Works that <span className="gold-grad">Travel</span></h2>
+          </div>
+          <div className="hsc-header-right">
+            <span className="hsc-item-count">{items.length} Creatives</span>
+          </div>
+        </div>
+
+        {/* ── Bento grid — every 7th card (0,7,14,21) spans 2 cols ─ */}
+        <div className="hsc-grid" ref={gridRef}>
+          {items.map((item, i) => (
+            <div key={item.id || item.title}
+                 className={"hsc-gi" + (i % 7 === 0 ? " hsc-gi--wide" : "")}>
+              <HScrollCard item={item} />
+            </div>
+          ))}
+        </div>
+
+      </div>
+    </section>
+  );
+}
+
+Object.assign(window, { Services, Work, ProjectModal, PortfolioCard, CAT_META, ToolAdder, COMMON_TOOLS, ModalBoundary, HorizontalCreatives });

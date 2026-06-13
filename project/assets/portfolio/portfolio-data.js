@@ -1,4 +1,4 @@
-﻿window.PORTFOLIO_DATA = [
+window.PORTFOLIO_DATA = [
   {
     "id": "pre-summer",
     "title": "Pre-Summer International Escapes",
@@ -16,7 +16,7 @@
       "uploads/portfolio_drive/Pre-Summer/8 Oman.jpg",
       "uploads/portfolio_drive/Pre-Summer/9 Indonesia.jpg"
     ],
-    "description": "A multi-destination pre-summer campaign showcasing Japan, South Korea, Thailand, Vietnam, Malaysia, Singapore, Dubai, Oman, and Indonesia â€” designed to inspire early travel bookings.",
+    "description": "A multi-destination pre-summer campaign showcasing Japan, South Korea, Thailand, Vietnam, Malaysia, Singapore, Dubai, Oman, and Indonesia - designed to inspire early travel bookings.",
     "tools": ["Photoshop"],
     "year": "2025"
   },
@@ -34,7 +34,7 @@
       "uploads/portfolio_drive/Cherry Blossom/5.jpg",
       "uploads/portfolio_drive/Cherry Blossom/6.jpg"
     ],
-    "description": "A vibrant cherry blossom season social media series capturing the magic of spring bloom â€” designed to generate wanderlust and drive Japan/Korea season bookings.",
+    "description": "A vibrant cherry blossom season social media series capturing the magic of spring bloom - designed to generate wanderlust and drive Japan/Korea season bookings.",
     "tools": ["Photoshop"],
     "year": "2025"
   },
@@ -57,10 +57,8 @@
       "uploads/portfolio_drive/Shiva Rathiri post/11 Ramanathaswamy.jpg",
       "uploads/portfolio_drive/Shiva Rathiri post/12 Grishneshwar.jpg"
     ],
-    "description": "A 12-part Shiva Ratri festival series highlighting all Jyotirlinga temples across India â€” combining spirituality, culture, and travel to drive pilgrimage bookings.",
-    "tools": [
-      "Photoshop"
-    ],
+    "description": "A 12-part Shiva Ratri festival series highlighting all Jyotirlinga temples across India - combining spirituality, culture, and travel to drive pilgrimage bookings.",
+    "tools": ["Photoshop"],
     "year": "2025"
   },
   {
@@ -86,7 +84,7 @@
       "uploads/portfolio_drive/Story pack-post/Vietnam 5N6D.jpg",
       "uploads/portfolio_drive/Story pack-post/Ayodhya.png"
     ],
-    "description": "Instagram Story-format (9:16) international package posts â€” vertical creatives for Bali, Georgia, Kenya, Nepal, Maldives, and 10+ more destinations.",
+    "description": "Instagram Story-format (9:16) international package posts - vertical creatives for Bali, Georgia, Kenya, Nepal, Maldives, and 10+ more destinations.",
     "tools": ["Photoshop"],
     "year": "2025"
   },
@@ -105,7 +103,7 @@
       "uploads/portfolio_drive/Malaysia Itinerary/Exclusions.jpg",
       "uploads/portfolio_drive/Malaysia Itinerary/Last Page.jpg"
     ],
-    "description": "A comprehensive Malaysia travel itinerary series â€” day-by-day guide with inclusions, exclusions, and stunning destination imagery to help clients plan their perfect trip.",
+    "description": "A comprehensive Malaysia travel itinerary series - day-by-day guide with inclusions, exclusions, and stunning destination imagery to help clients plan their perfect trip.",
     "tools": ["Photoshop"],
     "year": "2025"
   },
@@ -126,10 +124,8 @@
       "uploads/portfolio_drive/Republic weekend/Wayanad.png",
       "uploads/portfolio_drive/Republic weekend/Last Slide.png"
     ],
-    "description": "Republic Day long weekend promotional series â€” high-converting offer creatives for 8 top domestic destinations including Coorg, Wayanad, Vagamon, and Munnar.",
-    "tools": [
-      "Photoshop"
-    ],
+    "description": "Republic Day long weekend promotional series - high-converting offer creatives for 8 top domestic destinations including Coorg, Wayanad, Vagamon, and Munnar.",
+    "tools": ["Photoshop"],
     "year": "2025"
   },
   {
@@ -149,7 +145,7 @@
       "uploads/portfolio_drive/Valentine int/8.jpg",
       "uploads/portfolio_drive/Valentine int/Last Page.jpg"
     ],
-    "description": "A romantic 8-part Valentine's international destination series â€” curated getaways for couples with stunning visuals designed to inspire love and wanderlust.",
+    "description": "A romantic 8-part Valentine's international destination series - curated getaways for couples with stunning visuals designed to inspire love and wanderlust.",
     "tools": ["Photoshop"],
     "year": "2025"
   },
@@ -170,10 +166,8 @@
       "uploads/portfolio_drive/Havenly destination/Russia.png",
       "uploads/portfolio_drive/Havenly destination/Venezuela.png"
     ],
-    "description": "Global heavenly destination showcase â€” breathtaking visuals of Arizona, Brazil, Chile, China, Indonesia, Norway, and Venezuela to ignite wanderlust.",
-    "tools": [
-      "Photoshop"
-    ],
+    "description": "Global heavenly destination showcase - breathtaking visuals of Arizona, Brazil, Chile, China, Indonesia, Norway, and Venezuela to ignite wanderlust.",
+    "tools": ["Photoshop"],
     "year": "2025"
   },
   {
@@ -194,7 +188,7 @@
       "uploads/portfolio_drive/Int pack-post/Saudi Arabia.jpg",
       "uploads/portfolio_drive/Int pack-post/Vietnam 5N6D.jpg"
     ],
-    "description": "International package social media creatives covering Bali, Georgia, Kenya, Kyrgyzstan, Maldives, Saudi Arabia, and Vietnam â€” engineered for engagement and enquiries.",
+    "description": "International package social media creatives covering Bali, Georgia, Kenya, Kyrgyzstan, Maldives, Saudi Arabia, and Vietnam - engineered for engagement and enquiries.",
     "tools": ["Photoshop"],
     "year": "2025"
   },
@@ -215,10 +209,8 @@
       "uploads/portfolio_drive/North india weekend places/Shimla.png",
       "uploads/portfolio_drive/North india weekend places/Shiridi.png"
     ],
-    "description": "North India weekend destination guide featuring Srinagar, Ayodhya, Darjeeling, Gulmarg, Pahalgam, Shimla, and more â€” inspiring quick weekend breaks to the north.",
-    "tools": [
-      "Photoshop"
-    ],
+    "description": "North India weekend destination guide featuring Srinagar, Ayodhya, Darjeeling, Gulmarg, Pahalgam, Shimla, and more - inspiring quick weekend breaks to the north.",
+    "tools": ["Photoshop"],
     "year": "2025"
   },
   {
@@ -237,10 +229,8 @@
       "uploads/portfolio_drive/Thailand/Wat sri don moon.png",
       "uploads/portfolio_drive/Thailand/Dantewada.png"
     ],
-    "description": "Thailand iconic spot showcases â€” White Temple, Blue Temple, Doi Inthanon, and hidden gem cafes â€” each crafted to inspire exploration and drive bookings.",
-    "tools": [
-      "Photoshop"
-    ],
+    "description": "Thailand iconic spot showcases - White Temple, Blue Temple, Doi Inthanon, and hidden gem cafes - each crafted to inspire exploration and drive bookings.",
+    "tools": ["Photoshop"],
     "year": "2025"
   },
   {
@@ -258,7 +248,7 @@
       "uploads/portfolio_drive/Thaii - Itinerary/Exclusions.jpg",
       "uploads/portfolio_drive/Thaii - Itinerary/Last Page.jpg"
     ],
-    "description": "A detailed Thailand 4-day itinerary series â€” day-by-day visual guide with inclusions, exclusions, and destination photography for converting prospects into bookings.",
+    "description": "A detailed Thailand 4-day itinerary series - day-by-day visual guide with inclusions, exclusions, and destination photography for converting prospects into bookings.",
     "tools": ["Photoshop"],
     "year": "2025"
   },
@@ -276,10 +266,8 @@
       "uploads/portfolio_drive/Pongal int-trip/Oman.png",
       "uploads/portfolio_drive/Pongal int-trip/End Slide.jpg"
     ],
-    "description": "Pongal festival international trip promotions â€” special holiday packages to Azerbaijan, Georgia, Kazakhstan, Kyrgyzstan, and Oman for the festive travel season.",
-    "tools": [
-      "Photoshop"
-    ],
+    "description": "Pongal festival international trip promotions - special holiday packages to Azerbaijan, Georgia, Kazakhstan, Kyrgyzstan, and Oman for the festive travel season.",
+    "tools": ["Photoshop"],
     "year": "2025"
   },
   {
@@ -299,7 +287,7 @@
       "uploads/portfolio_drive/Valentine Domestic/Valentines Day.jpg",
       "uploads/portfolio_drive/Valentine Domestic/Last Page.jpg"
     ],
-    "description": "Valentine's Week domestic travel series â€” day-by-day romantic destination promotions from Rose Day through Valentine's Day, paired with special travel offers.",
+    "description": "Valentine's Week domestic travel series - day-by-day romantic destination promotions from Rose Day through Valentine's Day, paired with special travel offers.",
     "tools": ["Photoshop"],
     "year": "2025"
   },
@@ -316,10 +304,8 @@
       "uploads/portfolio_drive/Dubai- Why/4 For Everyone.jpg",
       "uploads/portfolio_drive/Dubai- Why/Last.jpg"
     ],
-    "description": "A compelling 'Why Dubai?' multi-slide campaign â€” covering perfect weather, festivals, seasonal attractions, and family-friendly experiences to drive destination enquiries.",
-    "tools": [
-      "Photoshop"
-    ],
+    "description": "A compelling Why Dubai multi-slide campaign - covering perfect weather, festivals, seasonal attractions, and family-friendly experiences to drive destination enquiries.",
+    "tools": ["Photoshop"],
     "year": "2025"
   },
   {
@@ -335,10 +321,8 @@
       "uploads/portfolio_drive/Handpicked-Dubai/4.jpg",
       "uploads/portfolio_drive/Handpicked-Dubai/5.jpg"
     ],
-    "description": "Curated Dubai experience highlights â€” a series of handpicked must-visit attractions showcasing the city of gold's iconic landmarks and hidden gems.",
-    "tools": [
-      "Photoshop"
-    ],
+    "description": "Curated Dubai experience highlights - a series of handpicked must-visit attractions showcasing the city of gold iconic landmarks and hidden gems.",
+    "tools": ["Photoshop"],
     "year": "2025"
   },
   {
@@ -355,7 +339,7 @@
       "uploads/portfolio_drive/Affordable int-pack/Vietnam.png",
       "uploads/portfolio_drive/Affordable int-pack/End Slide.jpg"
     ],
-    "description": "Budget-friendly international travel package promotions â€” Bali, Lakshadweep, Malaysia, Thailand, and Vietnam packages designed to convert price-conscious leads.",
+    "description": "Budget-friendly international travel package promotions - Bali, Lakshadweep, Malaysia, Thailand, and Vietnam packages designed to convert price-conscious leads.",
     "tools": ["Photoshop"],
     "year": "2025"
   },
@@ -374,10 +358,8 @@
       "uploads/portfolio_drive/Affordable weekend/Wayanad.png",
       "uploads/portfolio_drive/Affordable weekend/End Slide.jpg"
     ],
-    "description": "Affordable weekend getaway package series â€” scroll-stopping creatives for Coorg, Munnar, Vagamon, Wayanad, and Varkala that drive high enquiry rates.",
-    "tools": [
-      "Photoshop"
-    ],
+    "description": "Affordable weekend getaway package series - scroll-stopping creatives for Coorg, Munnar, Vagamon, Wayanad, and Varkala that drive high enquiry rates.",
+    "tools": ["Photoshop"],
     "year": "2025"
   },
   {
@@ -394,7 +376,7 @@
       "uploads/portfolio_drive/Creative Designs/McLaren.jpg",
       "uploads/portfolio_drive/Creative Designs/Porsche.jpg"
     ],
-    "description": "A showcase of creative graphic design work â€” photo manipulation, poster design, and branding including nature art, cinematic edits, car posters, and logo designs.",
+    "description": "A showcase of creative graphic design work - photo manipulation, poster design, and branding including nature art, cinematic edits, car posters, and logo designs.",
     "tools": ["Photoshop"],
     "year": "2025"
   },
@@ -411,10 +393,8 @@
       "uploads/portfolio_drive/48 Hrs reset/Inner 4.jpg",
       "uploads/portfolio_drive/48 Hrs reset/Last Page.jpg"
     ],
-    "description": "A 48-hour weekend escape campaign series â€” multi-page social media content designed to inspire quick mental resets through short getaways.",
-    "tools": [
-      "Photoshop"
-    ],
+    "description": "A 48-hour weekend escape campaign series - multi-page social media content designed to inspire quick mental resets through short getaways.",
+    "tools": ["Photoshop"],
     "year": "2025"
   },
   {
@@ -431,10 +411,8 @@
       "uploads/portfolio_drive/Domestic pack-post/Vagamon 4pax.png",
       "uploads/portfolio_drive/Domestic pack-post/Varkala Package Poster - 4 Pax.png"
     ],
-    "description": "Domestic tour package promotional posts â€” Ayodhya, Hampi, Chikmangalur, Tawang, Vagamon, and Varkala packages crafted for maximum social media reach.",
-    "tools": [
-      "Photoshop"
-    ],
+    "description": "Domestic tour package promotional posts - Ayodhya, Hampi, Chikmangalur, Tawang, Vagamon, and Varkala packages crafted for maximum social media reach.",
+    "tools": ["Photoshop"],
     "year": "2025"
   },
   {
@@ -451,7 +429,7 @@
       "uploads/portfolio_drive/Vaccation Calendar/October.png",
       "uploads/portfolio_drive/Vaccation Calendar/December.png"
     ],
-    "description": "Monthly travel vacation calendar creatives â€” branded monthly guides helping audiences plan their travel year with top destinations and holiday themes.",
+    "description": "Monthly travel vacation calendar creatives - branded monthly guides helping audiences plan their travel year with top destinations and holiday themes.",
     "tools": ["Photoshop"],
     "year": "2025"
   },
@@ -465,10 +443,8 @@
       "uploads/portfolio_drive/Places look like AI/3.png",
       "uploads/portfolio_drive/Places look like AI/4.png"
     ],
-    "description": "Viral travel content series â€” 'Places that look AI-generated but are real!' Unique visual storytelling format designed for maximum shares and reach.",
-    "tools": [
-      "Photoshop"
-    ],
+    "description": "Viral travel content series - Places that look AI-generated but are real! Unique visual storytelling format designed for maximum shares and reach.",
+    "tools": ["Photoshop"],
     "year": "2025"
   },
   {
@@ -480,10 +456,8 @@
       "uploads/portfolio_drive/Tour Album/T1 Slides.jpg",
       "uploads/portfolio_drive/Tour Album/N1 slides.jpg"
     ],
-    "description": "Tour album slideshow format social media posts â€” curated travel photography showcasing real customer trips to build social proof and trust.",
-    "tools": [
-      "Photoshop"
-    ],
+    "description": "Tour album slideshow format social media posts - curated travel photography showcasing real customer trips to build social proof and trust.",
+    "tools": ["Photoshop"],
     "year": "2025"
   }
 ];

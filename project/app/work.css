@@ -772,3 +772,82 @@
   .pf-inline-expand { padding: 18px; border-radius: 16px; }
   .pf-ie-title { font-size: 18px; }
 }
+
+/* =========================================================================
+   Work Groups — category-based grouped layout
+   ========================================================================= */
+.work-groups {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(52px, 7vw, 88px);
+  position: relative; z-index: 1;
+}
+
+.work-group {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(16px, 2vw, 24px);
+}
+
+/* ── Group header row ──────────────────────────────────────────────── */
+.work-group-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.work-group-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px 6px 12px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--cc, var(--gold)) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--cc, var(--gold)) 34%, transparent);
+  color: var(--cc, var(--gold));
+  font-family: var(--sans);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.work-group-count {
+  font-family: var(--sans);
+  font-size: 12px;
+  color: var(--ink-mut);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.work-group-line {
+  flex: 1;
+  height: 1px;
+  background: var(--hairline);
+}
+
+/* ── Group card grid ───────────────────────────────────────────────── */
+.work-group-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(14px, 1.8vw, 22px);
+}
+
+/* GSAP drives reveal — suppress default CSS animation */
+.work-groups .pf-cell {
+  animation: none !important;
+  opacity: 0; /* GSAP sets to 1 on scroll */
+}
+
+/* ── Responsive ────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .work-group-grid { grid-template-columns: repeat(2, 1fr); }
+  .work-groups { gap: clamp(40px, 6vw, 64px); }
+}
+@media (max-width: 560px) {
+  .work-group-grid { grid-template-columns: 1fr; }
+  .work-group-header { flex-wrap: wrap; }
+  .work-group-line { display: none; }
+}

@@ -1,9 +1,123 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
-  <title>Paramasivan — Portfolio</title>
-  <script>location.replace("Paramasivan-Portfolio.html");</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Paramasivan — Creative Visual Design & Social Media Content</title>
+  <meta name="description" content="Paramasivan — Creative Design Executive specializing in visual design, social media content design, branding and lead generation for travel brands." />
+  <meta name="author" content="Paramasivan" />
+  <meta property="og:title" content="Paramasivan — Creative Visual Design Solutions" />
+  <meta property="og:description" content="Designing creative visuals & social media content for travel brands." />
+  <meta property="og:type" content="website" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://unpkg.com" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,500;0,600;0,700;0,800;1,500;1,600;1,700&family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="app/styles.css" />
+  <link rel="stylesheet" href="app/sections.css" />
+  <link rel="stylesheet" href="app/hero.css" />
+  <link rel="stylesheet" href="app/about.css" />
+  <link rel="stylesheet" href="app/work.css" />
+  <link rel="stylesheet" href="app/casestudy.css" />
+  <link rel="stylesheet" href="app/connect.css" />
+  <link rel="stylesheet" href="app/showreel.css" />
+  <link rel="stylesheet" href="app/3d-world.css" />
+  <link rel="stylesheet" href="app/animations.css" />
+  <link rel="stylesheet" href="app/hscroll.css" />
+
+  <style>
+    /* Guarantee loader never hangs forever — fades after 6 s regardless of JS */
+    @keyframes _loader-force-out {
+      0%, 88% { opacity: 1; visibility: visible; pointer-events: auto; }
+      100%    { opacity: 0; visibility: hidden;  pointer-events: none;  }
+    }
+    #pw-loader { animation: _loader-force-out 6s ease-out forwards; }
+  </style>
 </head>
-<body></body>
+<body>
+
+  <!-- Page Loader -->
+  <div id="pw-loader">
+    <div class="pw-logo-ring">
+      <div class="pw-logo-center">P</div>
+    </div>
+    <div class="pw-progress-wrap">
+      <div class="pw-progress-track">
+        <div class="pw-progress-bar"></div>
+      </div>
+      <div class="pw-status">Loading…</div>
+    </div>
+  </div>
+
+  <!-- Scroll progress + indicator -->
+  <div id="scroll-progress"></div>
+  <div id="pw-scroll-indicator">
+    <div class="pw-scroll-mouse"><div class="pw-scroll-wheel"></div></div>
+    <span class="pw-scroll-text">Scroll</span>
+  </div>
+
+  <div class="aura"></div>
+  <div class="grain"></div>
+  <div class="bg-pattern"></div>
+
+  <!-- React mount point -->
+  <div id="root"></div>
+
+  <!-- Surface any script errors directly on page (auto-removed once React mounts) -->
+  <div id="err-overlay" style="
+    display:none; position:fixed; inset:0; z-index:999998;
+    background:#050d1a; color:#f87171;
+    font:13px/1.6 'Courier New',monospace; padding:32px; overflow:auto;
+  "></div>
+  <script>
+    window.onerror = function(msg, src, line, col, err) {
+      var o = document.getElementById('err-overlay');
+      if (!o) return;
+      o.style.display = 'block';
+      o.innerHTML += '<b>JS Error:</b> ' + msg + '<br><small>' + src + ' : ' + line + '</small><hr>';
+    };
+    window.onunhandledrejection = function(e) {
+      var o = document.getElementById('err-overlay');
+      if (!o) return;
+      o.style.display = 'block';
+      o.innerHTML += '<b>Unhandled Promise:</b> ' + (e.reason || e) + '<hr>';
+    };
+  </script>
+
+  <!-- React 18 + Babel (synchronous — load before JSX files) -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <!-- CDN libraries (deferred — 3d-effects.js retries until they're ready) -->
+  <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/ScrollTrigger.min.js"></script>
+
+  <!-- App data (synchronous — must run before JSX) -->
+  <script src="app/3d-scene.js"></script>
+  <script src="app/3d-character.js"></script>
+  <script src="app/data.js"></script>
+  <script src="assets/portfolio/portfolio-data.js"></script>
+
+  <!-- JSX components (Babel compiles these after DOMContentLoaded) -->
+  <script type="text/babel" src="app/tweaks-panel.jsx"></script>
+  <script type="text/babel" src="app/ui.jsx"></script>
+  <script type="text/babel" src="app/chrome.jsx"></script>
+  <script type="text/babel" src="app/hero.jsx"></script>
+  <script type="text/babel" src="app/about.jsx"></script>
+  <script type="text/babel" src="app/work.jsx"></script>
+  <script type="text/babel" src="app/casestudy.jsx"></script>
+  <script type="text/babel" src="app/connect.jsx"></script>
+  <script type="text/babel" src="app/main.jsx"></script>
+
+  <!-- Effects (runs after React mounts) -->
+  <script src="app/3d-effects.js"></script>
+  <script src="app/showreel.js"></script>
+
+</body>
 </html>
