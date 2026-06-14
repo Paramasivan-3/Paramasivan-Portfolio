@@ -1,973 +1,560 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Portfolio Gallery — Paramasivan V</title>
-  <meta name="description" content="Complete portfolio gallery of Paramasivan V — festival campaigns, travel promotions, lead-gen creatives, social media designs and more." />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="preconnect" href="https://unpkg.com" />
-  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,500;0,600;0,700;0,800;1,500;1,600;1,700&family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
 
-  <!-- FIX #1 — app/ui.jsx and app/work.jsx are shared with the main portfolio
-       page, and the main page loads Lenis + GSAP + ScrollTrigger before them.
-       This page did NOT, so ui.jsx / work.jsx crashed during evaluation and
-       window.ProjectModal / window.Reveal / window.Icon were never exported.
-       Result: cards never revealed and clicking a card silently failed.
-       Load the same libraries here so the shared files behave identically. -->
-  <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/ScrollTrigger.min.js"></script>
-
-  <link rel="stylesheet" href="app/styles.css" />
-  <link rel="stylesheet" href="app/sections.css" />
-  <link rel="stylesheet" href="app/work.css" />
-  <link rel="stylesheet" href="app/gallery.css" />
-  <link rel="stylesheet" href="app/showreel.css" />
-
-  <!-- Minimal styles for the built-in fallback viewer (works even if work.css fails) -->
   <style>
-    .gvf-overlay{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;
-      background:rgba(8,8,12,.88);backdrop-filter:blur(8px);padding:24px;}
-    .gvf-box{position:relative;max-width:min(960px,94vw);max-height:92vh;width:100%;display:flex;flex-direction:column;
-      gap:14px;background:var(--surface,#15151c);border:1px solid var(--hairline,rgba(255,255,255,.1));
-      border-radius:18px;padding:20px;overflow:auto;}
-    .gvf-img-wrap{position:relative;display:flex;align-items:center;justify-content:center;min-height:200px;
-      background:rgba(0,0,0,.25);border-radius:12px;overflow:hidden;}
-    .gvf-img{max-width:100%;max-height:62vh;object-fit:contain;border-radius:12px;display:block;}
-    .gvf-nav{position:absolute;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;
-      border:1px solid var(--hairline,rgba(255,255,255,.18));background:rgba(0,0,0,.45);color:#fff;
-      font-size:20px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-    .gvf-nav:hover{background:rgba(0,0,0,.7);}
-    .gvf-prev{left:10px;} .gvf-next{right:10px;}
-    .gvf-close{position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:50%;cursor:pointer;
-      border:1px solid var(--hairline,rgba(255,255,255,.18));background:rgba(0,0,0,.45);color:#fff;font-size:16px;}
-    .gvf-title{font-family:var(--display,Montserrat,sans-serif);font-size:clamp(18px,2.4vw,24px);
-      color:var(--ink,#f4f1ea);margin:0;}
-    .gvf-desc{font-family:var(--sans,Poppins,sans-serif);font-size:14px;line-height:1.65;
-      color:var(--ink-mut,#b9b4a8);margin:0;}
-    .gvf-meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
-    .gvf-chip{font-family:var(--sans,Poppins,sans-serif);font-size:12px;padding:4px 12px;border-radius:999px;
-      border:1px solid var(--hairline,rgba(255,255,255,.14));color:var(--ink-mut,#b9b4a8);}
-    .gvf-counter{font-family:var(--sans,Poppins,sans-serif);font-size:12px;color:var(--ink-mut,#b9b4a8);
-      position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
-      background:rgba(0,0,0,.55);padding:3px 12px;border-radius:999px;}
-    .gvf-projnav{display:flex;justify-content:space-between;gap:10px;margin-top:4px;}
-    .gvf-projbtn{font-family:var(--sans,Poppins,sans-serif);font-size:13px;padding:8px 16px;border-radius:10px;
-      cursor:pointer;border:1px solid var(--gold,#c9a35c);background:transparent;color:var(--gold,#c9a35c);}
-    .gvf-projbtn:disabled{opacity:.35;cursor:default;}
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { background: #000; color: #fff; overflow-x: hidden; }
+
+    /* ── Ambient + Grain ────────────────────────────────────── */
+    #ambient { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+    .grain {
+      position: fixed; inset: -200%; z-index: 1;
+      pointer-events: none; opacity: .022;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      animation: grain .5s steps(2) infinite;
+    }
+    @keyframes grain {
+      0%  { transform: translate(0,0); }
+      25% { transform: translate(-2%,-3%); }
+      50% { transform: translate(1%,2%); }
+      75% { transform: translate(-1%,1%); }
+    }
+
+    /* ── Back Button (z-index above everything) ─────────────── */
+    .back-btn {
+      position: fixed; top: 40px; left: 40px; z-index: 99999;
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      background: rgba(0,0,0,.5);
+      border: 1px solid #00D4FF; border-radius: 999px;
+      padding: 12px 22px; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: 'Space Mono', monospace; font-size: 11px;
+      color: #fff; letter-spacing: .06em; white-space: nowrap;
+      transition: transform .25s, box-shadow .25s;
+    }
+    .back-btn:hover { transform: scale(1.06); box-shadow: 0 0 28px rgba(0,212,255,.5); }
+
+    /* ══════════════════════════════════════════════════════════
+       S1 — INTRO (own full-screen section)
+    ══════════════════════════════════════════════════════════ */
+    .s-intro {
+      position: relative; min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; overflow: hidden; z-index: 2;
+    }
+    .s-intro::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,212,255,.3), transparent);
+    }
+    .s-intro__eye {
+      font-family: 'Space Mono', monospace; font-size: 9.5px;
+      letter-spacing: .34em; text-transform: uppercase; color: #00D4FF; margin-bottom: 26px;
+    }
+    .s-intro__title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(58px, 11vw, 145px);
+      font-weight: 800; line-height: .86; letter-spacing: -.045em; text-transform: uppercase;
+    }
+    .s-intro__line { display: block; overflow: hidden; }
+    .s-intro__word { display: inline-block; }
+    .s-intro__word--stroke {
+      color: transparent; -webkit-text-stroke: 2px #00D4FF;
+      text-shadow: 0 0 80px rgba(0,212,255,.25);
+    }
+    .s-intro__meta {
+      margin-top: 36px; display: flex; align-items: center; gap: 18px;
+      font-family: 'Space Mono', monospace; font-size: 9px;
+      letter-spacing: .22em; text-transform: uppercase; color: rgba(255,255,255,.28);
+    }
+    .s-intro__meta-line { width: 36px; height: 1px; background: rgba(255,255,255,.14); }
+    .s-intro__scroll {
+      position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+    }
+    .s-intro__scroll-track {
+      width: 1px; height: 52px; background: rgba(255,255,255,.08);
+      overflow: hidden; position: relative;
+    }
+    .s-intro__scroll-bar {
+      position: absolute; top: -100%; left: 0; width: 100%; height: 100%;
+      background: #00D4FF; animation: sdrop 1.9s ease-in-out infinite;
+    }
+    @keyframes sdrop { 0%{top:-100%;} 100%{top:100%;} }
+    .s-intro__scroll-text {
+      font-family: 'Space Mono', monospace; font-size: 7.5px;
+      letter-spacing: .28em; text-transform: uppercase; color: rgba(255,255,255,.2);
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       S2 — HORIZONTAL GALLERY
+    ══════════════════════════════════════════════════════════ */
+    .s-gallery { position: relative; background: #000; z-index: 2; }
+
+    /* Stage: NO overflow:hidden — mask handles edges instead */
+    .s-gallery__stage {
+      position: relative; width: 100%; height: 100vh; min-height: 520px;
+      /* Soft fade at left/right edges so cards never look physically cut off */
+      -webkit-mask-image: linear-gradient(
+        to right,
+        transparent 0%,
+        #000 8%,
+        #000 92%,
+        transparent 100%
+      );
+      mask-image: linear-gradient(
+        to right,
+        transparent 0%,
+        #000 8%,
+        #000 92%,
+        transparent 100%
+      );
+    }
+
+    /* Horizontal track — 3-row grid */
+    .s-gallery__track {
+      position: relative;
+      display: grid;
+      grid-template-rows: repeat(3, 1fr);
+      grid-auto-flow: column;
+      gap: 14px 18px;
+      width: max-content; height: 100%;
+      padding: 16px 8vw; will-change: transform;
+    }
+
+    /* ── Cards ── */
+    .g-card {
+      position: relative;
+      height: 100%; /* fills grid row — all images fully visible */
+      border-radius: 12px; overflow: hidden; cursor: pointer;
+      background: #0a0a0a;
+      border: 1px solid rgba(255,255,255,.05);
+      box-shadow: 0 8px 40px rgba(0,0,0,.65);
+      transition: box-shadow .3s;
+    }
+    .g-card::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+      height: 3px; background: var(--cc, #00D4FF);
+      opacity: 0; transition: opacity .3s;
+    }
+    .g-card:hover { box-shadow: 0 18px 64px rgba(0,0,0,.85), 0 0 0 1px rgba(0,212,255,.22); }
+    .g-card:hover::after { opacity: 1; }
+    .g-card img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+    .g-card__cap {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 32px 16px 16px;
+      background: linear-gradient(transparent, rgba(0,0,0,.92));
+      display: flex; flex-direction: column; gap: 4px;
+      opacity: 0; transition: opacity .3s; pointer-events: none;
+    }
+    .g-card:hover .g-card__cap { opacity: 1; }
+    .g-card__cat {
+      font-family: 'Space Mono', monospace; font-size: 7.5px; font-weight: 700;
+      letter-spacing: .22em; text-transform: uppercase; color: var(--cc, #00D4FF);
+    }
+    .g-card__title {
+      font-family: 'Syne', sans-serif; font-size: 12.5px; font-weight: 700;
+      color: rgba(255,255,255,.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    /* ── Gallery HUD (fixed, outside pinned stage, always above mask) ── */
+    .g-hud {
+      position: fixed; inset: 0; z-index: 800; pointer-events: none;
+      opacity: 0; transition: opacity .5s;
+    }
+    .g-hud.is-active { opacity: 1; }
+    .g-hud__count {
+      position: absolute; bottom: 38px; right: 44px;
+      display: flex; align-items: baseline; gap: 5px;
+    }
+    .g-hud__cur {
+      font-family: 'Syne', sans-serif; font-size: 30px; font-weight: 800;
+      color: #00D4FF; letter-spacing: -.03em; line-height: 1;
+    }
+    .g-hud__sep { font-size: 14px; color: rgba(255,255,255,.18); }
+    .g-hud__tot { font-family: 'Space Mono', monospace; font-size: 13px; color: rgba(255,255,255,.2); }
+    .g-hud__bar {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 2px; background: rgba(255,255,255,.05);
+    }
+    .g-hud__bar-fill {
+      height: 100%; background: linear-gradient(90deg, #00D4FF, #0066ff);
+      transform: scaleX(0); transform-origin: left;
+    }
+
+    /* ── Lightbox ─────────────────────────────────────────── */
+    .lb {
+      position: fixed; inset: 0; z-index: 50000;
+      background: rgba(0,0,0,.97);
+      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity .28s;
+    }
+    .lb.is-open { opacity: 1; pointer-events: auto; }
+    .lb__close {
+      position: fixed; top: 20px; right: 20px;
+      width: 44px; height: 44px; border-radius: 50%;
+      border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.8); font-size: 17px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: background .2s;
+    }
+    .lb__close:hover { background: rgba(200,30,30,.5); }
+    .lb__img-wrap { width:100%; height:100%; display:flex; align-items:center; justify-content:center; padding:70px 90px 80px; }
+    .lb__img { max-width:100%; max-height:100%; object-fit:contain; border-radius:4px; }
+    .lb__nav {
+      position: fixed; top: 50%; transform: translateY(-50%);
+      width: 48px; height: 48px; border-radius: 50%;
+      border: 1px solid rgba(255,255,255,.1); background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.8); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      backdrop-filter: blur(8px); transition: background .2s;
+    }
+    .lb__nav:hover { background: rgba(0,212,255,.22); }
+    .lb__nav--l { left: 14px; } .lb__nav--r { right: 14px; }
+    .lb__cap {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      display: flex; align-items: center; gap: 12px; padding: 16px 22px;
+      background: linear-gradient(transparent, rgba(0,0,0,.92)); pointer-events: none;
+    }
+    .lb__cat { font-family:'Space Mono',monospace; font-size:8.5px; font-weight:700; letter-spacing:.22em; text-transform:uppercase; color:#00D4FF; }
+    .lb__ttl { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; color:rgba(255,255,255,.8); flex:1; }
+    .lb__ctr { font-family:'Space Mono',monospace; font-size:11px; color:rgba(255,255,255,.28); }
+
+    @media (max-width:640px) {
+      .back-btn { top:20px; left:20px; padding:10px 16px; font-size:10px; }
+      .g-hud__count { right:20px; bottom:24px; }
+      .g-hud__cur { font-size:22px; }
+      .s-gallery__track { grid-template-rows: repeat(2, 1fr); gap: 10px 12px; padding: 12px 4vw; }
+    }
   </style>
 </head>
 <body>
-  <div class="aura"></div>
-  <div class="grain"></div>
-  <div class="bg-pattern"></div>
-  <div id="gallery-root"></div>
 
-  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<canvas id="ambient" aria-hidden="true"></canvas>
+<div class="grain" aria-hidden="true"></div>
 
-  <script src="app/data.js"></script>
-  <script src="assets/portfolio/portfolio-data.js"></script>
-  <script src="assets/portfolio/file-tree.js"></script>
-  <script type="text/babel" src="app/ui.jsx"></script>
-  <script type="text/babel" src="app/work.jsx"></script>
+<!-- Always visible back button — above mask, above everything -->
+<a href="Paramasivan-Portfolio.html" class="back-btn">&#8592;&nbsp;Back to Portfolio</a>
 
-  <script type="text/babel">
-    /* FIX #2 — OLD CODE (the bug):
-         const { ProjectModal, CAT_META, COMMON_TOOLS } = window;
-       This grabbed the globals ONCE at load time. If work.jsx failed,
-       ProjectModal was frozen as `undefined` forever — so clicking any
-       card rendered <undefined/>, React threw "Element type is invalid",
-       the ErrorBoundary swallowed it, and the page appeared STUCK.
-       Now: read window.* lazily at render time, with safe defaults.   */
+<!-- ════ S1 INTRO ════════════════════════════════════════════ -->
+<section class="s-intro" id="s-intro">
+  <p class="s-intro__eye">Paramasivan V &mdash; Visual Designer</p>
+  <h1 class="s-intro__title">
+    <span class="s-intro__line"><span class="s-intro__word" id="iw1">Portfolio</span></span>
+    <span class="s-intro__line"><span class="s-intro__word s-intro__word--stroke" id="iw2">Gallery</span></span>
+  </h1>
+  <div class="s-intro__meta">
+    <span class="s-intro__meta-line"></span>
+    <span id="i-count">197</span>&nbsp;Creatives
+    <span class="s-intro__meta-line"></span>
+  </div>
+  <div class="s-intro__scroll">
+    <div class="s-intro__scroll-track"><div class="s-intro__scroll-bar"></div></div>
+    <span class="s-intro__scroll-text">Scroll</span>
+  </div>
+</section>
 
-    const getProjectModal = () =>
-      (typeof window.ProjectModal === "function" ? window.ProjectModal : null);
+<!-- ════ S2 GALLERY ══════════════════════════════════════════ -->
+<section class="s-gallery" id="s-gallery">
+  <div class="s-gallery__stage" id="g-stage">
+    <div class="s-gallery__track" id="g-track"></div>
+  </div>
+</section>
 
-    const getCatMeta = () => window.CAT_META || {
-      "General Creative":     { color: "var(--gold, #c9a35c)" },
-      "Festival Creative":    { color: "#e07a5f" },
-      "Lead Generation Post": { color: "#7ab8e0" },
-    };
+<!-- HUD (fixed, outside pinned element — unaffected by mask) -->
+<div class="g-hud" id="g-hud">
+  <div class="g-hud__count">
+    <span class="g-hud__cur" id="g-cur">00</span>
+    <span class="g-hud__sep">/</span>
+    <span class="g-hud__tot" id="g-tot">00</span>
+  </div>
+  <div class="g-hud__bar"><div class="g-hud__bar-fill" id="g-fill"></div></div>
+</div>
 
-    const getCommonTools = () =>
-      Array.isArray(window.COMMON_TOOLS) && window.COMMON_TOOLS.length
-        ? window.COMMON_TOOLS
-        : ["Photoshop","Illustrator","Canva","Figma","After Effects",
-           "Premiere Pro","Midjourney","CapCut"];
+<!-- Lightbox -->
+<div class="lb" id="lb" role="dialog" aria-modal="true">
+  <button class="lb__close" id="lb-close">&#10005;</button>
+  <button class="lb__nav lb__nav--l" id="lb-prev">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12 4L7 10l5 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+  <div class="lb__img-wrap"><img class="lb__img" id="lb-img" src="" alt="" /></div>
+  <button class="lb__nav lb__nav--r" id="lb-next">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M8 4l5 6-5 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+  <div class="lb__cap">
+    <span class="lb__cat" id="lb-cat"></span>
+    <span class="lb__ttl" id="lb-ttl"></span>
+    <span class="lb__ctr" id="lb-ctr"></span>
+  </div>
+</div>
 
-    /* Icon fallback — if ui.jsx failed, bare `Icon` was a ReferenceError
-       that crashed the back bar and the entire page. */
-    const Icon = window.Icon || function Icon({ name, size = 16, style }) {
-      const glyphs = { search:"🔍", close:"✕", layers:"▣", spark:"✦", magnet:"◎",
-        check:"✓", eye:"◉", arrowRight:"→", arrowUp:"↑" };
-      return (
-        <span aria-hidden="true" style={{ display:"inline-flex", width:size, height:size,
-          alignItems:"center", justifyContent:"center", fontSize:Math.max(11, size - 3),
-          lineHeight:1, ...style }}>
-          {glyphs[name] || "•"}
-        </span>
-      );
-    };
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/ScrollTrigger.min.js"></script>
+<script src="assets/portfolio/portfolio-data.js"></script>
+<script>
+/* ── 3D Perspective Grid Background ──────────────────────── */
+(function(){
+  var c=document.getElementById('ambient'),ctx=c.getContext('2d'),W,H;
+  var t=0;
+  var COLS=14, ROWS=18;
+  var HY=0.42; /* horizon y fraction — 42% down the screen */
 
-    /* FIX #3 — Dependency-free Reveal. The old code preferred window.Reveal from
-       ui.jsx, whose animation depends on GSAP/ScrollTrigger — which this
-       page never loaded, so cards stayed at opacity 0 ("stuck" page).
-       This Reveal uses only IntersectionObserver + a watchdog timeout,
-       so content can NEVER stay hidden.                                */
-    function Reveal({ children, className = "", style = {}, delay = 0 }) {
-      const ref = React.useRef(null);
-      const [on, setOn] = React.useState(false);
-      React.useEffect(() => {
-        const el = ref.current;
-        if (!el || !("IntersectionObserver" in window)) { setOn(true); return; }
-        const io = new IntersectionObserver(entries => {
-          if (entries[0].isIntersecting) { setOn(true); io.disconnect(); }
-        }, { rootMargin: "0px 0px -8% 0px" });
-        io.observe(el);
-        const watchdog = setTimeout(() => setOn(true), 1500 + delay);
-        return () => { io.disconnect(); clearTimeout(watchdog); };
-      }, []);
-      return (
-        <div ref={ref} className={className}
-          style={{ ...style,
-            opacity: on ? 1 : 0,
-            transform: on ? "none" : "translateY(16px)",
-            transition: "opacity .55s ease " + delay + "ms, transform .55s ease " + delay + "ms" }}>
-          {children}
-        </div>
-      );
+  /* Stars in the sky (above horizon) */
+  var NSTARS=110;
+  var stars=[];
+  for(var i=0;i<NSTARS;i++){
+    stars.push({
+      x:Math.random(),
+      y:Math.random()*HY,
+      sz:0.3+Math.random()*1.4,
+      ph:Math.random()*Math.PI*2,
+      sp:2+Math.random()*4 /* twinkle speed multiplier */
+    });
+  }
+
+  function resize(){W=c.width=innerWidth;H=c.height=innerHeight;}
+  window.addEventListener('resize',resize);resize();
+
+  (function frame(){
+    ctx.clearRect(0,0,W,H);
+    t+=0.0025;
+
+    var horizon=H*HY;
+    var bottom=H*1.10; /* slightly beyond bottom for clean edge bleed */
+    var cx=W/2;
+
+    /* Sky gradient — subtle deep blue tint above horizon */
+    var sky=ctx.createLinearGradient(0,0,0,horizon);
+    sky.addColorStop(0,'rgba(0,4,18,0.55)');
+    sky.addColorStop(1,'rgba(0,12,28,0)');
+    ctx.fillStyle=sky;
+    ctx.fillRect(0,0,W,horizon);
+
+    /* Horizon glow line */
+    var hg=ctx.createLinearGradient(0,horizon-28,0,horizon+55);
+    hg.addColorStop(0,'rgba(0,212,255,0)');
+    hg.addColorStop(0.38,'rgba(0,212,255,0.055)');
+    hg.addColorStop(0.6,'rgba(0,212,255,0.03)');
+    hg.addColorStop(1,'rgba(0,212,255,0)');
+    ctx.fillStyle=hg;
+    ctx.fillRect(0,horizon-28,W,83);
+
+    /* Thin horizon line */
+    ctx.beginPath();
+    ctx.moveTo(0,horizon);
+    ctx.lineTo(W,horizon);
+    ctx.strokeStyle='rgba(0,212,255,0.10)';
+    ctx.lineWidth=0.7;
+    ctx.stroke();
+
+    /* ── Vertical grid lines — fan from vanishing point ─── */
+    for(var col=-COLS;col<=COLS;col++){
+      var xNear=cx+(col/COLS)*W*0.60;
+      var alpha;
+      if(col===0){ alpha=0.22; }
+      else { alpha=Math.max(0,0.09-(Math.abs(col/COLS))*0.082); }
+      if(alpha<0.005)continue;
+      ctx.beginPath();
+      ctx.moveTo(cx,horizon);
+      ctx.lineTo(xNear,bottom);
+      ctx.strokeStyle='rgba(0,212,255,'+alpha.toFixed(3)+')';
+      ctx.lineWidth=(col===0)?1.0:0.5;
+      ctx.stroke();
     }
 
-    /* ── Constants ──────────────────────────────────────────────────── */
-    const FORM_CATS = ["General Creative", "Festival Creative", "Lead Generation Post"];
-    const ALL_CATS  = ["All", ...FORM_CATS];
-    const FILE_BASE = "uploads/portfolio_drive/";
-
-    /* ── normalizeItem — guarantees every required field's type ─────── */
-    function normalizeItem(raw) {
-      if (!raw || typeof raw !== "object") return null;
-      const image = raw.image || "";
-      const images = Array.isArray(raw.images)
-        ? raw.images
-        : (image ? [image] : []);
-      return {
-        ...raw,
-        id:          raw.id || raw.title || ("item-" + Math.random().toString(36).slice(2)),
-        title:       raw.title       || "Untitled Project",
-        category:    raw.category    || raw.cat || "General Creative",
-        description: raw.description || raw.desc || "",
-        image,
-        images,
-        tools: Array.isArray(raw.tools)
-          ? raw.tools
-          : (raw.tools ? [String(raw.tools)] : []),
-        year: raw.year || "",
-      };
+    /* ── Horizontal grid lines — perspective-animated ───── */
+    var zoff=t%1;
+    for(var row=0;row<ROWS;row++){
+      var frac=((row/ROWS+zoff)%1.0);
+      /* Quadratic maps linear [0-1] to perspective-compressed spacing */
+      var p=frac*frac;
+      var y=horizon+(bottom-horizon)*p;
+      /* Width grows with depth illusion */
+      var hw=(W*0.52)*p;
+      /* Alpha brightest at mid-distance, fades at horizon and near-edge */
+      var edgeFade=Math.min(1,frac*6); /* fade in from horizon */
+      var a=p*edgeFade*0.16;
+      ctx.beginPath();
+      ctx.moveTo(cx-hw,y);
+      ctx.lineTo(cx+hw,y);
+      ctx.strokeStyle='rgba(0,212,255,'+a.toFixed(3)+')';
+      ctx.lineWidth=0.5;
+      ctx.stroke();
     }
 
-    /* ── ErrorBoundary (generic, with optional fallback element) ────── */
-    class ErrorBoundary extends React.Component {
-      constructor(props) {
-        super(props);
-        this.state = { hasError: false };
+    /* ── Stars — twinkle above horizon ───────────────────── */
+    for(var j=0;j<stars.length;j++){
+      var s=stars[j];
+      var sa=Math.max(0,0.05+0.30*Math.abs(Math.sin(t*s.sp+s.ph)));
+      ctx.beginPath();
+      ctx.arc(s.x*W,s.y*H,s.sz,0,Math.PI*2);
+      ctx.fillStyle='rgba(200,235,255,'+sa.toFixed(3)+')';
+      ctx.fill();
+    }
+
+    /* ── Subtle ground fog near bottom ───────────────────── */
+    var fog=ctx.createLinearGradient(0,H*0.85,0,H);
+    fog.addColorStop(0,'rgba(0,0,0,0)');
+    fog.addColorStop(1,'rgba(0,0,0,0.35)');
+    ctx.fillStyle=fog;
+    ctx.fillRect(0,H*0.85,W,H*0.15);
+
+    requestAnimationFrame(frame);
+  })();
+})();
+
+/* ── Data ─────────────────────────────────────────────────── */
+gsap.registerPlugin(ScrollTrigger);
+
+var CAT_COLOR={
+  'Festival Creatives':'#06B6D4',
+  'Travel Promotions':'#8B5CF6',
+  'Lead Generation Creatives':'#10B981',
+  'Social Media Designs':'#F59E0B'
+};
+var RAW=window.PORTFOLIO_DATA||[];
+var allImages=[];
+RAW.forEach(function(p){
+  var imgs=Array.isArray(p.images)&&p.images.length?p.images:(p.image?[p.image]:[]);
+  imgs.forEach(function(src){
+    allImages.push({src:src,title:p.title||'Untitled',category:p.category||'Social Media Designs'});
+  });
+});
+document.getElementById('g-tot').textContent   = String(allImages.length).padStart(2,'0');
+document.getElementById('i-count').textContent  = allImages.length||197;
+
+/* ── Build cards ─────────────────────────────────────────── */
+var gTrack = document.getElementById('g-track');
+var ROWS = 3;
+/* Each row fills 1/3 of viewport; card widths are aspect-ratio-proportional to rowH */
+var rowH = Math.floor((window.innerHeight - 80) / ROWS); /* 80 = padding (32) + gaps (28) + buffer */
+/* Width ratios cycling per column (col = floor(i/ROWS)) */
+var WRATIOS = [0.72, 1.55, 1.02, 0.85]; /* portrait / landscape / square / medium */
+
+var cards=[];
+allImages.forEach(function(img,i){
+  var col = Math.floor(i / ROWS);
+  var w   = Math.round(rowH * WRATIOS[col % WRATIOS.length]);
+  var cc  = CAT_COLOR[img.category]||'#00D4FF';
+  var el  = document.createElement('div');
+  el.className='g-card';
+  el.dataset.idx=i;
+  el.style.width=w+'px';
+  el.style.setProperty('--cc',cc);
+  el.innerHTML=
+    "<img src='"+img.src.replace(/'/g,"&apos;")+"'"
+    +" alt='"+img.title.replace(/'/g,"&apos;")+"'"
+    +" loading='lazy' decoding='async'>"
+    +"<div class='g-card__cap'>"
+    +"<span class='g-card__cat'>"+img.category+"</span>"
+    +"<span class='g-card__title'>"+img.title+"</span>"
+    +"</div>";
+  gTrack.appendChild(el);
+  cards.push({el:el,cardW:w});
+});
+
+/* ── Lightbox ─────────────────────────────────────────────── */
+var lbIdx=0;
+function openLb(idx){
+  lbIdx=Math.max(0,Math.min(idx,allImages.length-1));
+  var it=allImages[lbIdx];
+  document.getElementById('lb-img').src=it.src;
+  document.getElementById('lb-cat').textContent=it.category;
+  document.getElementById('lb-ttl').textContent=it.title;
+  document.getElementById('lb-ctr').textContent=(lbIdx+1)+' / '+allImages.length;
+  document.getElementById('lb').classList.add('is-open');
+  document.body.style.overflow='hidden';
+}
+function closeLb(){
+  document.getElementById('lb').classList.remove('is-open');
+  document.body.style.overflow='';
+}
+document.getElementById('lb-close').addEventListener('click',closeLb);
+document.getElementById('lb-prev').addEventListener('click',function(){openLb(lbIdx-1);});
+document.getElementById('lb-next').addEventListener('click',function(){openLb(lbIdx+1);});
+document.getElementById('lb').addEventListener('click',function(e){if(e.target===this)closeLb();});
+document.addEventListener('keydown',function(e){
+  if(!document.getElementById('lb').classList.contains('is-open'))return;
+  if(e.key==='Escape')closeLb();
+  if(e.key==='ArrowLeft')openLb(lbIdx-1);
+  if(e.key==='ArrowRight')openLb(lbIdx+1);
+});
+gTrack.addEventListener('click',function(e){
+  var card=e.target.closest('.g-card');
+  if(card)openLb(parseInt(card.dataset.idx));
+});
+
+/* ── GSAP ────────────────────────────────────────────────── */
+window.addEventListener('load',function(){
+
+  /* S1 intro entrance */
+  gsap.fromTo('#iw1',{yPercent:110},{yPercent:0,duration:1.1,ease:'power4.out',delay:.15});
+  gsap.fromTo('#iw2',{yPercent:110},{yPercent:0,duration:1.1,ease:'power4.out',delay:.30});
+  gsap.fromTo('.s-intro__eye', {opacity:0,y:14},{opacity:1,y:0,duration:.9,ease:'power3.out',delay:.1});
+  gsap.fromTo('.s-intro__meta',{opacity:0,y:10},{opacity:1,y:0,duration:.8,ease:'power3.out',delay:.8});
+
+  /* S2 gallery: measure */
+  void gTrack.offsetWidth;
+  cards.forEach(function(c){ c.offsetX=c.el.offsetLeft; c.cardW=c.el.offsetWidth; });
+
+  var trackW  = Math.max(200, gTrack.scrollWidth - window.innerWidth);
+  var pinDist = Math.max(window.innerHeight * 8, trackW * 0.45);
+
+  var hud     = document.getElementById('g-hud');
+  var gFill   = document.getElementById('g-fill');
+  var gCur    = document.getElementById('g-cur');
+
+  /* Per-card update: hide off-screen cards; mask softens edges */
+  function applyCards(p) {
+    var sX  = p * trackW;
+    var vpW = window.innerWidth;
+    for(var i=0;i<cards.length;i++){
+      var c   = cards[i];
+      var vx  = c.offsetX - sX;
+      var vxR = vx + c.cardW;
+      c.el.style.opacity   = (vxR < -150 || vx > vpW + 250) ? '0' : '1';
+      c.el.style.transform = '';
+    }
+  }
+
+  /* Set initial state at p=0 before any scroll */
+  applyCards(0);
+
+  /* Main tween */
+  gsap.to(gTrack,{
+    x: -trackW,
+    ease: 'none',
+    scrollTrigger:{
+      trigger: '#s-gallery',
+      start:   'top top',
+      end:     '+='+pinDist,
+      scrub:   1.2,
+      pin:     true,
+      invalidateOnRefresh: true,
+      onEnter:    function(){ hud.classList.add('is-active'); },
+      onLeave:    function(){ hud.classList.remove('is-active'); },
+      onEnterBack:function(){ hud.classList.add('is-active'); },
+      onLeaveBack:function(){ hud.classList.remove('is-active'); },
+      onUpdate: function(self){
+        var p = self.progress;
+        gFill.style.transform = 'scaleX('+p.toFixed(4)+')';
+        gCur.textContent = String(Math.round(p*allImages.length)).padStart(2,'0');
+        applyCards(p);
       }
-      static getDerivedStateFromError() { return { hasError: true }; }
-      componentDidCatch(err, info) {
-        console.error("[Gallery] Render error:", err, info?.componentStack);
-      }
-      render() {
-        if (this.state.hasError) {
-          if (this.props.fallback) return this.props.fallback;
-          return (
-            <div style={{ padding: "24px 20px", textAlign: "center",
-              color: "var(--ink-mut)", fontFamily: "var(--sans)", fontSize: "14px",
-              border: "1px solid var(--hairline)", borderRadius: "14px",
-              background: "var(--surface)" }}>
-              <p style={{ marginBottom: "12px" }}>⚠ Could not display this project.</p>
-              <button
-                onClick={() => this.setState({ hasError: false })}
-                style={{ padding: "6px 18px", borderRadius: "8px", cursor: "pointer",
-                  border: "1px solid var(--gold)", background: "transparent",
-                  color: "var(--gold)", fontFamily: "var(--sans)", fontSize: "13px" }}>
-                Retry
-              </button>
-            </div>
-          );
-        }
-        return this.props.children;
-      }
     }
-
-    /* FIX #4 — Built-in fallback project viewer.
-       Even if app/work.jsx is missing or its ProjectModal crashes,
-       clicking a card ALWAYS opens this viewer. No silent failures.  */
-    function FallbackProjectModal({ item, items, onClose, onNav }) {
-      const safe = normalizeItem(item) || { title: "", images: [], tools: [] };
-      const imgs = safe.images.length ? safe.images : (safe.image ? [safe.image] : []);
-      const list = Array.isArray(items) ? items : [];
-      const pos  = list.findIndex(p => (p.id || p.title) === (safe.id || safe.title));
-      const [idx, setIdx] = React.useState(0);
-
-      React.useEffect(() => { setIdx(0); }, [safe.id, safe.title]);
-
-      const nextImg = React.useCallback(
-        () => setIdx(i => (imgs.length ? (i + 1) % imgs.length : 0)), [imgs.length]);
-      const prevImg = React.useCallback(
-        () => setIdx(i => (imgs.length ? (i - 1 + imgs.length) % imgs.length : 0)), [imgs.length]);
-
-      React.useEffect(() => {
-        const onKey = e => {
-          if (e.key === "Escape")     onClose();
-          if (e.key === "ArrowRight") nextImg();
-          if (e.key === "ArrowLeft")  prevImg();
-        };
-        document.addEventListener("keydown", onKey);
-        const prevOverflow = document.body.style.overflow;
-        document.body.style.overflow = "hidden";
-        return () => {
-          document.removeEventListener("keydown", onKey);
-          document.body.style.overflow = prevOverflow;
-        };
-      }, [onClose, nextImg, prevImg]);
-
-      const goProject = dir => {
-        if (pos < 0 || !onNav) return;
-        const target = list[pos + dir];
-        if (target) onNav(target);
-      };
-
-      return ReactDOM.createPortal(
-        <div className="gvf-overlay"
-          onClick={e => e.target === e.currentTarget && onClose()}
-          role="dialog" aria-modal="true" aria-label={safe.title}>
-          <div className="gvf-box">
-            <button className="gvf-close" onClick={onClose} aria-label="Close">✕</button>
-
-            <div className="gvf-img-wrap">
-              {imgs.length > 0 ? (
-                <img key={imgs[idx]} className="gvf-img" src={imgs[idx]} alt={safe.title}
-                  onError={e => { e.currentTarget.style.opacity = "0.15"; }} />
-              ) : (
-                <div style={{ padding:"60px 20px", color:"var(--ink-mut,#999)",
-                  fontFamily:"var(--sans,sans-serif)", fontSize:"14px" }}>
-                  No image available
-                </div>
-              )}
-              {imgs.length > 1 && (
-                <React.Fragment>
-                  <button className="gvf-nav gvf-prev" onClick={prevImg} aria-label="Previous image">&#8249;</button>
-                  <button className="gvf-nav gvf-next" onClick={nextImg} aria-label="Next image">&#8250;</button>
-                  <span className="gvf-counter">{idx + 1} / {imgs.length}</span>
-                </React.Fragment>
-              )}
-            </div>
-
-            <h2 className="gvf-title">{safe.title}</h2>
-            {safe.description ? <p className="gvf-desc">{safe.description}</p> : null}
-
-            <div className="gvf-meta">
-              <span className="gvf-chip" style={{ borderColor:"var(--gold,#c9a35c)",
-                color:"var(--gold,#c9a35c)" }}>{safe.category}</span>
-              {safe.year ? <span className="gvf-chip">{safe.year}</span> : null}
-              {safe.tools.map(t => <span key={t} className="gvf-chip">{t}</span>)}
-            </div>
-
-            {list.length > 1 && pos >= 0 && (
-              <div className="gvf-projnav">
-                <button className="gvf-projbtn" disabled={pos <= 0}
-                  onClick={() => goProject(-1)}>&larr; Previous project</button>
-                <button className="gvf-projbtn" disabled={pos >= list.length - 1}
-                  onClick={() => goProject(1)}>Next project &rarr;</button>
-              </div>
-            )}
-          </div>
-        </div>,
-        document.body
-      );
-    }
-
-    /* ── ModalHost: prefer the real ProjectModal, fall back safely ──── */
-    function ModalHost(props) {
-      const RealModal = getProjectModal();
-      if (!RealModal) {
-        console.warn("[Gallery] window.ProjectModal unavailable — using fallback viewer. Check that app/work.jsx loaded without errors.");
-        return <FallbackProjectModal {...props} />;
-      }
-      return (
-        <ErrorBoundary fallback={<FallbackProjectModal {...props} />}>
-          <RealModal {...props} />
-        </ErrorBoundary>
-      );
-    }
-
-    /* ── Tool selector — chips + dropdown ───────────────────────────── */
-    function ToolSelector({ value, onChange }) {
-      const COMMON_TOOLS = getCommonTools();
-      const safeValue = Array.isArray(value) ? value : [];
-      const [open, setOpen] = React.useState(false);
-      const avail = COMMON_TOOLS.filter(t => !safeValue.includes(t));
-
-      React.useEffect(() => {
-        if (!open) return;
-        const onDoc = e => { if (!e.target.closest(".ts-root")) setOpen(false); };
-        document.addEventListener("mousedown", onDoc);
-        return () => document.removeEventListener("mousedown", onDoc);
-      }, [open]);
-
-      return (
-        <div className="ts-root">
-          <div className="ts-chips">
-            {safeValue.map(t => (
-              <span key={t} className="tool tool-editable">
-                {t}
-                <button className="tool-remove-btn"
-                  onClick={() => onChange(safeValue.filter(x => x !== t))}>×</button>
-              </span>
-            ))}
-
-            {avail.length > 0 && (
-              <div style={{ position: "relative" }}>
-                <button className="tool-add-btn" onClick={() => setOpen(o => !o)}>
-                  + Add Tool
-                </button>
-                {open && (
-                  <div className="tool-dropdown tool-dropdown-up">
-                    {avail.map(t => (
-                      <button key={t} className="tool-dropdown-item"
-                        onClick={() => { onChange([...safeValue, t]); setOpen(false); }}>
-                        {t}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {safeValue.length === 0 && !open && (
-              <span style={{ color: "var(--ink-mut)", fontSize: "13px" }}>
-                Click "+ Add Tool" to select
-              </span>
-            )}
-          </div>
-        </div>
-      );
-    }
-
-    /* ── File Browser — folder list + image grid ────────────────────── */
-    function FileBrowser({ selected, onSelect, initialFolder }) {
-      const fileTree = window.PORTFOLIO_FILES || {};
-      const folders  = Object.keys(fileTree);
-
-      const autoFolder = React.useMemo(() => {
-        if (initialFolder) return initialFolder;
-        const first = (selected || [])[0];
-        if (!first) return folders[0] || "";
-        const m = first.match(/portfolio_drive\/([^/]+)\//);
-        return (m && fileTree[m[1]]) ? m[1] : (folders[0] || "");
-      }, []);
-
-      const [activeFolder, setActiveFolder] = React.useState(autoFolder);
-      const [search,       setSearch]       = React.useState("");
-
-      const filteredFolders = folders.filter(f =>
-        f.toLowerCase().includes(search.toLowerCase())
-      );
-      const files = fileTree[activeFolder] || [];
-
-      return (
-        <div className="fb-root">
-          <div className="fb-folders">
-            <div className="fb-search-wrap">
-              <Icon name="search" size={13} />
-              <input className="fb-search" type="text" placeholder="Search folders…"
-                value={search} onChange={e => setSearch(e.target.value)} />
-            </div>
-            <div className="fb-folder-list">
-              {filteredFolders.map(f => (
-                <button key={f}
-                  className={"fb-folder-btn" + (f === activeFolder ? " on" : "")}
-                  onClick={() => setActiveFolder(f)} title={f}>
-                  <span className="fb-folder-ico">📁</span>
-                  <span className="fb-folder-name">{f}</span>
-                  <span className="fb-folder-count">{(fileTree[f] || []).length}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="fb-files">
-            <div className="fb-files-header">
-              <span className="fb-files-title">{activeFolder}</span>
-              <span className="fb-files-info">Ctrl+click for multi-select</span>
-            </div>
-            <div className="fb-grid">
-              {files.map(fname => {
-                const path    = FILE_BASE + activeFolder + "/" + fname;
-                const isOn    = (selected || []).includes(path);
-                const isCover = selected?.[0] === path;
-                return (
-                  <button key={fname} className={"fb-img-btn" + (isOn ? " on" : "")}
-                    onClick={e => {
-                      if (e.ctrlKey || e.metaKey) {
-                        onSelect(prev => (prev || []).includes(path)
-                          ? prev.filter(p => p !== path)
-                          : [...(prev || []), path]);
-                      } else {
-                        onSelect([path]);
-                      }
-                    }} title={fname}>
-                    <img src={path} alt={fname} loading="lazy"
-                      onError={e => { e.currentTarget.parentElement.style.display = "none"; }} />
-                    {isCover && <span className="fb-cover-tag">Cover</span>}
-                    {isOn && !isCover && <span className="fb-check">✓</span>}
-                    <span className="fb-fname">{fname}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    /* ── Project Form Modal (Add mode) ──────────────────────────────── */
-    function ProjectFormModal({ onSave, onClose }) {
-      const [imgTab,    setImgTab]  = React.useState("browse");
-      const [selFiles,  setSelFiles] = React.useState([]);
-      const [uploadSrc, setUpSrc]   = React.useState(null);
-      const [form, setForm] = React.useState({
-        title:       "",
-        category:    FORM_CATS[0],
-        description: "",
-        tools:       [],
-        year:        "2025",
-      });
-      const [error, setError] = React.useState("");
-
-      const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
-
-      const handleFile = e => {
-        const file = e.target.files?.[0]; if (!file) return;
-        const reader = new FileReader();
-        reader.onload = ev => setUpSrc(ev.target.result);
-        reader.readAsDataURL(file);
-      };
-
-      const coverImg = imgTab === "upload" ? uploadSrc : (selFiles[0] || null);
-      const allImgs  = imgTab === "upload"
-        ? (uploadSrc ? [uploadSrc] : [])
-        : selFiles;
-
-      const submit = () => {
-        if (!form.title.trim()) { setError("Title is required."); return; }
-        onSave(normalizeItem({
-          id:          "custom-" + Date.now(),
-          title:       form.title.trim(),
-          category:    form.category,
-          description: form.description.trim(),
-          tools:       form.tools,
-          year:        form.year || "2025",
-          image:       coverImg || "",
-          images:      allImgs,
-        }));
-        onClose();
-      };
-
-      React.useEffect(() => {
-        const onKey = e => { if (e.key === "Escape") onClose(); };
-        document.addEventListener("keydown", onKey);
-        return () => document.removeEventListener("keydown", onKey);
-      }, []);
-
-      return ReactDOM.createPortal(
-        <div className="pv-overlay"
-          onClick={e => e.target === e.currentTarget && onClose()}
-          role="dialog" aria-modal="true">
-          <div className="add-modal glass">
-
-            <div className="add-modal-header">
-              <h2>Add New Project</h2>
-              <button className="pv-close glass" onClick={onClose} aria-label="Close">
-                <Icon name="close" size={18} />
-              </button>
-            </div>
-
-            <div className="add-modal-body">
-
-              <div className="add-field">
-                <label className="add-label">Images</label>
-                <div className="add-img-tabs">
-                  <button className={"add-img-tab" + (imgTab === "browse" ? " on" : "")}
-                    onClick={() => setImgTab("browse")}>
-                    <Icon name="layers" size={13} /> Browse Files
-                  </button>
-                  <button className={"add-img-tab" + (imgTab === "upload" ? " on" : "")}
-                    onClick={() => setImgTab("upload")}>
-                    <Icon name="arrowUp" size={13} /> Upload New
-                  </button>
-                </div>
-
-                {imgTab === "browse" && (
-                  <div className="add-browser-wrap">
-                    <FileBrowser selected={selFiles} onSelect={setSelFiles} />
-                    {selFiles.length > 0 && (
-                      <div className="fb-selection-bar">
-                        <Icon name="check" size={13} />
-                        <span>
-                          {selFiles.length === 1
-                            ? "1 image selected as cover"
-                            : selFiles.length + " images — first is cover"}
-                        </span>
-                        <button className="fb-clear-btn" onClick={() => setSelFiles([])}>Clear</button>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {imgTab === "upload" && (
-                  <div className="add-img-upload"
-                    onClick={() => document.getElementById("add-file-input")?.click()}>
-                    {uploadSrc
-                      ? <img src={uploadSrc} alt="preview"
-                          style={{ width:"100%", height:"100%", objectFit:"cover", borderRadius:"8px" }} />
-                      : <div className="add-img-ph">
-                          <Icon name="layers" size={28} style={{ opacity:.35 }} />
-                          <span>Click to upload image</span>
-                          <span className="add-img-ph-sub">PNG, JPG, WEBP</span>
-                        </div>
-                    }
-                    <input id="add-file-input" type="file" accept="image/*"
-                      style={{ display:"none" }} onChange={handleFile} />
-                  </div>
-                )}
-              </div>
-
-              <div className="add-field">
-                <label className="add-label">
-                  Project Title <span className="add-req">*</span>
-                </label>
-                <input className="add-input" type="text"
-                  placeholder="e.g. Summer Travel Campaign"
-                  value={form.title}
-                  onChange={e => { set("title", e.target.value); setError(""); }} />
-                {error && <span className="add-error">{error}</span>}
-              </div>
-
-              <div className="add-field">
-                <label className="add-label">Category</label>
-                <div className="add-cat-pills">
-                  {FORM_CATS.map(c => (
-                    <button key={c}
-                      className={"add-cat-pill" + (form.category === c ? " on" : "")}
-                      onClick={() => set("category", c)}>
-                      {c === "General Creative"     && <Icon name="layers"  size={13} />}
-                      {c === "Festival Creative"    && <Icon name="spark"   size={13} />}
-                      {c === "Lead Generation Post" && <Icon name="magnet"  size={13} />}
-                      {c}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="add-field">
-                <label className="add-label">Description</label>
-                <textarea className="add-input add-textarea"
-                  placeholder="Brief description of the project…"
-                  value={form.description}
-                  onChange={e => set("description", e.target.value)}
-                  rows={3} />
-              </div>
-
-              <div className="add-field">
-                <label className="add-label">Tools Used</label>
-                <ToolSelector
-                  value={form.tools}
-                  onChange={tools => set("tools", tools)}
-                />
-              </div>
-
-              <div className="add-field">
-                <label className="add-label">Year</label>
-                <input className="add-input" type="text" placeholder="2025"
-                  value={form.year} onChange={e => set("year", e.target.value)} />
-              </div>
-            </div>
-
-            <div className="add-modal-footer">
-              <button className="add-cancel-btn" onClick={onClose}>Cancel</button>
-              <button className="add-submit-btn" onClick={submit}>
-                <span style={{ fontSize:"16px", fontWeight:700 }}>+</span> Add Project
-              </button>
-            </div>
-          </div>
-        </div>,
-        document.body
-      );
-    }
-
-    /* ── Gallery Card — fully defensive, never crashes ──────────────── */
-    function GalleryCard({ item, onOpen }) {
-      const safeItem = React.useMemo(() => normalizeItem(item), [item]);
-
-      const category = safeItem.category;
-      const catMeta  = getCatMeta()[category] || { color: "var(--gold)" };
-      const hasImg   = !!(safeItem.image && safeItem.image.trim());
-      const imgCount = safeItem.images.length > 1 ? safeItem.images.length : null;
-
-      const handleClick = React.useCallback((e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        onOpen(safeItem);
-      }, [safeItem, onOpen]);
-
-      return (
-        <article
-          className="pf-card glass"
-          onClick={handleClick}
-          onKeyDown={e => e.key === "Enter" && handleClick(e)}
-          role="button" tabIndex={0}
-          aria-label={"Open " + safeItem.title}
-        >
-          <div className="pf-thumb" style={{ "--cc": catMeta.color }}>
-            {hasImg ? (
-              <img
-                className="pf-img"
-                src={safeItem.image}
-                alt={safeItem.title}
-                loading="lazy"
-                onError={e => { e.currentTarget.style.display = "none"; }}
-              />
-            ) : null}
-            <div className="pf-ph ph" style={{ display: hasImg ? "none" : "flex" }} />
-            <div className="pf-badge" style={{ "--cc": catMeta.color }}>{category}</div>
-            {imgCount && (
-              <div className="gallery-img-count-badge">
-                <Icon name="layers" size={11} />{imgCount}
-              </div>
-            )}
-            <div className="pf-hover-overlay">
-              <div className="pf-view-ring"><Icon name="eye" size={24} /></div>
-              <span className="pf-view-label">View Project</span>
-            </div>
-          </div>
-
-          <div className="pf-footer">
-            <div className="pf-footer-main">
-              <h3 className="pf-title">{safeItem.title}</h3>
-              <div className="pf-tools">
-                {safeItem.tools.slice(0, 3).map(t => (
-                  <span key={t} className="tool">{t}</span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </article>
-      );
-    }
-
-    /* ── CylHCard — card for horizontal coverflow cylinder ─────────────── */
-    const CARD_W = 300;
-    const CARD_H = 400;
-    const GAP    = 24;
-    const STEP   = CARD_W + GAP; /* 324px per slot */
-
-    function CylHCard({ item, onOpen }) {
-      const safe  = React.useMemo(() => normalizeItem(item), [item]);
-      if (!safe) return null;
-      const color  = (getCatMeta()[safe.category] || {}).color || "var(--gold)";
-      const hasImg = !!(safe.image && safe.image.trim());
-      return (
-        <div className="cyl-card" onClick={() => onOpen(safe)}>
-          {hasImg
-            ? <img className="cyl-img" src={safe.image} alt={safe.title}
-                onError={e => { e.currentTarget.style.display = "none"; }} />
-            : <div className="cyl-ph" style={{ "--cc": color }} />
-          }
-          <span className="cyl-badge" style={{ "--cc": color }}>{safe.category}</span>
-          <div className="cyl-overlay">
-            <div className="cyl-footer">
-              <h3 className="cyl-title">{safe.title}</h3>
-              <span className="cyl-cta">View Project →</span>
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    /* ── CylinderGallery — horizontal coverflow that scrolls cylindrically ── */
-    function CylinderGallery({ items, onOpen }) {
-      const wrapRef  = React.useRef(null);
-      const trackRef = React.useRef(null);
-      const cardRefs = React.useRef([]);
-      const stRef    = React.useRef(null);
-      const [cur, setCur] = React.useState(0);
-
-      React.useEffect(() => {
-        if (!items.length) return;
-        cardRefs.current = cardRefs.current.slice(0, items.length);
-        const wrap  = wrapRef.current;
-        const track = trackRef.current;
-        if (!wrap || !track) return;
-
-        let tries = 0;
-        const boot = () => {
-          if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
-            if (++tries < 30) { setTimeout(boot, 200); return; }
-            return;
-          }
-          gsap.registerPlugin(ScrollTrigger);
-          if (stRef.current) { stRef.current.kill(); stRef.current = null; }
-          gsap.set(track, { x: 0 });
-
-          /* 24px matches padding-left on .cylh-track */
-          const GUTTER_L = 24;
-
-          /* Scroll until last card centre aligns with viewport centre.
-             Card i centre at translateX=tx: GUTTER_L + i*STEP + CARD_W/2 + tx */
-          const getMaxTx = () =>
-            GUTTER_L + (items.length - 1) * STEP + CARD_W / 2 - window.innerWidth / 2;
-
-          const updateCards = (tx) => {
-            const vwH = window.innerWidth / 2;
-            cardRefs.current.forEach((el, i) => {
-              if (!el) return;
-              const dist   = GUTTER_L + i * STEP + CARD_W / 2 + tx - vwH;
-              const rotY   = -dist * 0.065;
-              const scale  = Math.max(0.70, 1 - Math.abs(dist) * 0.00055);
-              const bright = Math.max(0.40, 1 - Math.abs(dist) * 0.00090);
-              gsap.set(el, { rotateY: rotY, scale, filter: "brightness(" + bright + ")" });
-            });
-            const idx = Math.round((window.innerWidth / 2 - GUTTER_L - CARD_W / 2 - tx) / STEP);
-            setCur(Math.max(0, Math.min(items.length - 1, idx)));
-          };
-
-          updateCards(0);
-
-          stRef.current = gsap.to(track, {
-            x: () => -getMaxTx(),
-            ease: "none",
-            scrollTrigger: {
-              trigger: wrap,
-              pin: true,
-              scrub: 1.2,
-              start: "top top",
-              end: () => "+=" + getMaxTx(),
-              invalidateOnRefresh: true,
-              anticipatePin: 1,
-              onUpdate() {
-                const tx = gsap.getProperty(track, "x") || 0;
-                updateCards(tx);
-              }
-            }
-          });
-        };
-
-        setTimeout(boot, 150);
-        return () => { if (stRef.current) { stRef.current.kill(); stRef.current = null; } };
-      }, [items]);
-
-      return (
-        <div ref={wrapRef} className="cylh-section">
-
-          <div className="cylh-scene">
-            <div ref={trackRef} className="cylh-track">
-              {items.map((item, i) => (
-                <div key={(item.id || item.title) + i}
-                     className="cylh-card-wrap"
-                     ref={el => { cardRefs.current[i] = el; }}>
-                  <CylHCard item={item} onOpen={onOpen} />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Left / right edge fade */}
-          <div className="cyl-vignette cyl-vignette--h" aria-hidden="true" />
-
-          {/* Counter — right side */}
-          <div className="cyl-counter">
-            <span className="cyl-cur">{String(cur + 1).padStart(2, "0")}</span>
-            <span className="cyl-sep">──</span>
-            <span className="cyl-tot">{String(items.length).padStart(2, "0")}</span>
-          </div>
-
-          {/* Scroll hint */}
-          <div className="cylh-hint">← Scroll to browse →</div>
-
-        </div>
-      );
-    }
-
-    /* ── Gallery App ─────────────────────────────────────────────────── */
-    function GalleryApp() {
-      const [projects,   setProjects]   = React.useState([]);
-      const [activeItem, setActiveItem] = React.useState(null);
-      const [activeCat,  setActiveCat]  = React.useState("All");
-      const [loaded,     setLoaded]     = React.useState(false);
-      const [addOpen,    setAddOpen]    = React.useState(false);
-      const [theme,      setTheme]      = React.useState(() => {
-        try { return localStorage.getItem("pv-theme") || "dark"; }
-        catch (e) { return "dark"; }
-      });
-
-      React.useEffect(() => {
-        document.documentElement.setAttribute("data-theme", theme);
-        try { localStorage.setItem("pv-theme", theme); } catch (e) {}
-      }, [theme]);
-
-      React.useEffect(() => {
-        try {
-          let data = [];
-          const inline = window.PORTFOLIO_DATA;
-
-          /* 1. Load base data and normalize immediately */
-          if (Array.isArray(inline) && inline.length) {
-            data = inline.map(normalizeItem).filter(Boolean);
-          } else {
-            console.warn("[Gallery] window.PORTFOLIO_DATA is empty or missing — check assets/portfolio/portfolio-data.js");
-          }
-
-          /* 2. Apply whole-project deletions */
-          const deleted = JSON.parse(localStorage.getItem("pv-deleted") || "[]");
-          data = data.filter(p => !deleted.includes(p.id || p.title));
-
-          /* 3. Apply per-project edits — re-normalize after merge */
-          const edits = JSON.parse(localStorage.getItem("pv-project-edits") || "{}");
-          data = data.map(p => {
-            const key  = p.id || p.title;
-            const edit = edits[key];
-            return edit ? normalizeItem({ ...p, ...edit }) : p;
-          }).filter(Boolean);
-
-          /* 4. Append user-added projects — normalize those too */
-          const added = JSON.parse(localStorage.getItem("pv-added") || "[]");
-          const addedNorm = Array.isArray(added)
-            ? added.map(normalizeItem).filter(Boolean)
-            : [];
-
-          setProjects([...data, ...addedNorm]);
-        } catch (err) {
-          console.error("[Gallery] Failed to load data:", err);
-          setProjects([]);
-        } finally {
-          setLoaded(true);
-        }
-      }, []);
-
-      const filtered = React.useMemo(
-        () => activeCat === "All"
-          ? projects
-          : projects.filter(p => (p.category || "General Creative") === activeCat),
-        [projects, activeCat]
-      );
-
-      const handleSaveProject = React.useCallback((newItem) => {
-        const normalized = normalizeItem(newItem);
-        if (!normalized) return;
-        setProjects(prev => [...prev, normalized]);
-        try {
-          const added = JSON.parse(localStorage.getItem("pv-added") || "[]");
-          added.push(normalized);
-          localStorage.setItem("pv-added", JSON.stringify(added));
-        } catch (e) {
-          console.warn("[Gallery] Could not persist new project:", e);
-        }
-      }, []);
-
-      const handleOpenItem = React.useCallback((item) => {
-        setActiveItem(item);
-      }, []);
-
-      const handleCloseModal = React.useCallback(() => {
-        setActiveItem(null);
-      }, []);
-
-      return (
-        <div className="gallery-page">
-
-          {/* ── Back bar ── */}
-          <nav className="gallery-back-bar">
-            <a href="Paramasivan-Portfolio.html" className="gallery-back-btn">
-              <Icon name="arrowRight" size={15} style={{ transform: "rotate(180deg)" }} />
-              Back to Portfolio
-            </a>
-            <span className="gallery-back-title">Paramasivan V — Portfolio Gallery</span>
-            <span className="gallery-back-count">{filtered.length} Projects</span>
-          </nav>
-
-          {/* ── Loading skeleton ── */}
-          {!loaded && (
-            <div style={{ display:"flex", gap:"16px", overflow:"hidden",
-              padding:"20px var(--gut)", justifyContent:"center" }}>
-              {Array.from({length:3}).map((_,i) => (
-                <div key={i} className="pf-skeleton-card"
-                  style={{width:"300px",height:"400px",flexShrink:0,borderRadius:"20px"}} />
-              ))}
-            </div>
-          )}
-
-          {/* ── Empty state ── */}
-          {loaded && filtered.length === 0 && (
-            <div className="gallery-wrap">
-              <div className="gallery-empty">
-                <Icon name="search" size={40} style={{ opacity: 0.35 }} />
-                <p>No projects in this category.</p>
-              </div>
-            </div>
-          )}
-
-          {/* ── Horizontal cylinder (coverflow) ── */}
-          {loaded && filtered.length > 0 && (
-            <CylinderGallery items={filtered} onOpen={handleOpenItem} />
-          )}
-
-          {/* ── Project viewer — real modal if available, fallback otherwise ── */}
-          {activeItem && (
-            <ModalHost
-              item={activeItem}
-              items={filtered}
-              onClose={handleCloseModal}
-              onNav={setActiveItem}
-            />
-          )}
-
-          {/* ── Add project modal ── */}
-          {addOpen && (
-            <ProjectFormModal
-              onSave={handleSaveProject}
-              onClose={() => setAddOpen(false)}
-            />
-          )}
-
-          {/* ── Footer ── */}
-          <footer style={{
-            textAlign: "center", padding: "60px 20px 40px",
-            color: "var(--ink-mut)", fontFamily: "var(--sans)", fontSize: "13px"
-          }}>
-            <p>© 2025 Paramasivan V — Creative Visual Design & Social Media Content</p>
-            <p style={{ marginTop: "8px" }}>
-              <a href="Paramasivan-Portfolio.html"
-                style={{ color: "var(--gold)", textDecoration: "none" }}>
-                ← Back to main portfolio
-              </a>
-            </p>
-          </footer>
-        </div>
-      );
-    }
-
-    ReactDOM.createRoot(document.getElementById("gallery-root")).render(
-      <ErrorBoundary>
-        <GalleryApp />
-      </ErrorBoundary>
-    );
-  </script>
-  <script src="app/showreel.js"></script>
+  });
+
+  ScrollTrigger.refresh();
+});
+</script>
 </body>
 </html>

@@ -647,137 +647,204 @@ class ModalBoundary extends React.Component {
 }
 
 /* ==========================================================================
-   HScrollCard — single card in the bento grid
+   HsSlide — one cinematic slide per individual image
    ========================================================================== */
-function HScrollCard({ item }) {
-  const cat    = item.category || item.cat || "";
-  const meta   = CAT_META[cat] || {};
-  const color  = meta.color || "var(--gold)";
-  const hasImg = !!(item.image && item.image.trim());
-  const [open, setOpen] = useState(false);
-
+function HsSlide({ src, title, category, index }) {
+  const catColor = (CAT_META[category] || {}).color || "var(--gold)";
+  const [err, setErr] = useState(false);
+  /* Alternate widths: 0→wide, 1→portrait, 2→portrait, 3→wide, repeat */
+  const pattern = [520, 320, 340, 480];
+  const w = pattern[index % pattern.length];
   return (
-    <>
-      <div className="hsc-card" onClick={() => setOpen(true)}>
-        <div className="hsc-media">
-          {hasImg
-            ? <img src={item.image} alt={item.title} className="hsc-img" loading="lazy" />
-            : <div className="hsc-ph" style={{ "--cc": color }} />
-          }
-          <span className="hsc-badge" style={{ "--cc": color }}>{cat}</span>
-          <div className="hsc-overlay">
-            <span className="hsc-ico"><Icon name="eye" size={18} /></span>
-          </div>
-        </div>
-        <div className="hsc-footer">
-          <span className="hsc-title">{item.title}</span>
-          <span className="hsc-dot" style={{ background: color, color }} />
-        </div>
-      </div>
-
-      {open && <ProjectModal
-        item={item} items={[item]}
-        onClose={() => setOpen(false)}
-        onNav={() => {}}
-      />}
-    </>
+    <figure
+      className="hs-slide"
+      style={{ "--sw": w + "px", "--cc": catColor }}
+      aria-label={title}
+    >
+      {src && !err ? (
+        <img
+          className="hs-slide-img"
+          src={src}
+          alt={title}
+          loading="lazy"
+          decoding="async"
+          onError={() => setErr(true)}
+        />
+      ) : (
+        <div className="hs-slide-ph" />
+      )}
+      <figcaption className="hs-slide-cap">
+        <span className="hs-slide-cat">{category}</span>
+        <span className="hs-slide-ttl">{title}</span>
+      </figcaption>
+      <span className="hs-slide-idx">{String(index + 1).padStart(2, "0")}</span>
+    </figure>
   );
 }
 
 /* ==========================================================================
-   HorizontalCreatives — Framer-style vertical bento grid with scroll animations
+   HorizontalCreatives — Cinematic GSAP pin + scrub horizontal filmstrip
+   Every individual image from every project folder shown as its own slide.
    ========================================================================== */
 function HorizontalCreatives() {
-  const [items, setItems] = useState([]);
-  const gridRef           = useRef(null);
+  const [slides, setSlides] = useState([]);
+  const sectionRef          = useRef(null);
+  const trackRef            = useRef(null);
+  const gsapCtxRef          = useRef(null);
 
-  /* ── Load portfolio data ─────────────────────────────────────── */
+  /* ── Flatten every image from every project ─────────────────── */
   useEffect(() => {
-    const norm = raw => {
-      if (!raw || typeof raw !== "object") return null;
-      return {
-        ...raw,
-        id:       raw.id    || raw.title || Math.random().toString(36).slice(2),
-        title:    raw.title || "Untitled",
-        category: raw.category || raw.cat || "General Creative",
-        image:    raw.image || "",
-        tools:    Array.isArray(raw.tools) ? raw.tools : [],
-      };
-    };
-    const useData = data => setItems(data.map(norm).filter(Boolean));
-    const inline = window.PORTFOLIO_DATA;
-    if (Array.isArray(inline) && inline.length) { useData(inline); return; }
-    fetch("assets/portfolio/portfolio.json")
-      .then(r => r.ok ? r.json() : Promise.reject())
-      .then(useData)
-      .catch(() => useData((window.DATA && window.DATA.work) || []));
+    const raw = window.PORTFOLIO_DATA;
+    if (!Array.isArray(raw)) return;
+    const flat = [];
+    raw.forEach(p => {
+      const imgs = Array.isArray(p.images) && p.images.length
+        ? p.images
+        : (p.image ? [p.image] : []);
+      imgs.forEach(src => flat.push({
+        src,
+        title:    p.title    || "Untitled",
+        category: p.category || "",
+      }));
+    });
+    setSlides(flat);
   }, []);
 
-  /* ── GSAP scroll-triggered card animations ───────────────────── */
+  /* ── GSAP pin + horizontal scrub ─────────────────────────────── */
   useEffect(() => {
-    if (!items.length) return;
-    const grid = gridRef.current;
-    if (!grid) return;
+    if (!slides.length) return;
+    const section = sectionRef.current;
+    const track   = trackRef.current;
+    if (!section || !track) return;
 
     let tries = 0;
     const init = () => {
       if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
-        if (++tries < 25) { setTimeout(init, 200); } return;
+        if (++tries < 40) { setTimeout(init, 200); return; }
+        return;
       }
       gsap.registerPlugin(ScrollTrigger);
-      const cards = Array.from(grid.querySelectorAll(".hsc-gi"));
-      cards.forEach((card, i) => {
-        gsap.fromTo(card,
-          { opacity: 0, y: 52 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.75,
-            ease: "power3.out",
-            delay: (i % 4) * 0.08,
-            scrollTrigger: {
-              trigger: card,
-              start: "top 90%",
-              once: true,
-            }
-          }
-        );
-      });
-    };
-    setTimeout(init, 120);
-  }, [items]);
+      if (gsapCtxRef.current) gsapCtxRef.current.revert();
 
-  if (!items.length) return null;
+      gsapCtxRef.current = gsap.context(() => {
+        const dist = () => track.scrollWidth - section.clientWidth;
+
+        gsap.to(track, {
+          x:    () => -dist(),
+          ease: "none",
+          scrollTrigger: {
+            trigger:             section,
+            start:               "top top",
+            end:                 () => "+=" + dist(),
+            pin:                 true,
+            scrub:               1.2,
+            anticipatePin:       1,
+            invalidateOnRefresh: true,
+            onUpdate: self => {
+              const bar = section.querySelector(".hs-bar-fill");
+              const ctr = section.querySelector(".hs-counter-cur");
+              if (bar) bar.style.transform =
+                "scaleX(" + self.progress.toFixed(4) + ")";
+              if (ctr) ctr.textContent =
+                String(Math.round(self.progress * slides.length)).padStart(2, "0");
+            },
+          },
+        });
+
+        /* subtle per-slide parallax — images scale slightly while scrolling */
+        Array.from(track.querySelectorAll(".hs-slide-img")).forEach(img => {
+          gsap.fromTo(img,
+            { scale: 1.08 },
+            {
+              scale: 1,
+              ease: "none",
+              scrollTrigger: {
+                trigger:             section,
+                start:               "top top",
+                end:                 () => "+=" + dist(),
+                scrub:               2,
+                invalidateOnRefresh: true,
+              },
+            }
+          );
+        });
+      }, section);
+    };
+    setTimeout(init, 300);
+
+    return () => { if (gsapCtxRef.current) gsapCtxRef.current.revert(); };
+  }, [slides]);
+
+  if (!slides.length) return null;
 
   return (
-    <section id="creatives" className="hsc-section">
-      <div className="wrap">
+    <section id="creatives" className="hs-section" ref={sectionRef}>
 
-        {/* ── Header ───────────────────────────────────────────── */}
-        <div className="hsc-head-row">
-          <div className="hsc-header-left">
-            <span className="hsc-eyebrow-pill">
-              <span className="hsc-eyebrow-dot" />
-              Creative Showcase
-            </span>
-            <h2 className="hsc-h2">Works that <span className="gold-grad">Travel</span></h2>
-          </div>
-          <div className="hsc-header-right">
-            <span className="hsc-item-count">{items.length} Creatives</span>
-          </div>
+      {/* ── Fixed UI overlay (stays put while track moves) ─────── */}
+      <div className="hs-ui" aria-hidden="true">
+
+        {/* top-left label */}
+        <div className="hs-label-tl">
+          <span className="hs-label-dot" />
+          <span className="hs-label-text">Creative Showcase</span>
         </div>
 
-        {/* ── Bento grid — every 7th card (0,7,14,21) spans 2 cols ─ */}
-        <div className="hsc-grid" ref={gridRef}>
-          {items.map((item, i) => (
-            <div key={item.id || item.title}
-                 className={"hsc-gi" + (i % 7 === 0 ? " hsc-gi--wide" : "")}>
-              <HScrollCard item={item} />
-            </div>
-          ))}
+        {/* top-right counter */}
+        <div className="hs-counter">
+          <span className="hs-counter-cur">00</span>
+          <span className="hs-counter-sep">/</span>
+          <span className="hs-counter-tot">
+            {String(slides.length).padStart(2, "0")}
+          </span>
+        </div>
+
+        {/* bottom-left title */}
+        <div className="hs-label-bl">
+          <h2 className="hs-title">
+            Works<br />
+            <em>that Travel</em>
+          </h2>
+          <a href="portfolio-gallery.html" className="hs-gallery-link" aria-label="View full gallery">
+            <span>Full Gallery</span>
+            <span className="hs-gallery-arrow">→</span>
+          </a>
+        </div>
+
+        {/* bottom-right scroll hint */}
+        <div className="hs-scroll-hint">
+          <div className="hs-scroll-line"><div className="hs-scroll-bar" /></div>
+          <span className="hs-scroll-text">Scroll</span>
         </div>
 
       </div>
+
+      {/* ── Filmstrip track ────────────────────────────────────── */}
+      <div className="hs-track" ref={trackRef}>
+        {slides.map((s, i) => (
+          <HsSlide
+            key={s.src + "-" + i}
+            src={s.src}
+            title={s.title}
+            category={s.category}
+            index={i}
+          />
+        ))}
+
+        {/* CTA end slide */}
+        <a href="portfolio-gallery.html" className="hs-cta-slide" aria-label="View full portfolio gallery">
+          <div className="hs-cta-ring">
+            <Icon name="layers" size={26} />
+          </div>
+          <p className="hs-cta-text">View Full<br />Portfolio Gallery</p>
+          <span className="hs-cta-arrow">→</span>
+        </a>
+      </div>
+
+      {/* ── Bottom progress bar ─────────────────────────────────── */}
+      <div className="hs-bar-track" aria-hidden="true">
+        <div className="hs-bar-fill" />
+      </div>
+
     </section>
   );
 }
