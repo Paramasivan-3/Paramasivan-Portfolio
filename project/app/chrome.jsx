@@ -237,7 +237,7 @@ function Footer() {
     { id: "about",    label: "About"     },
     { id: "skills",   label: "Skills"    },
     { id: "work",     label: "Portfolio" },
-    { id: "services", label: "Services"  },
+    { id: "case-studies", label: "Case Study"  },
     { id: "contact",  label: "Contact"   },
   ];
 

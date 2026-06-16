@@ -65,6 +65,30 @@ window.DATA = {
     { title: "Summer Sale Lead Funnel", cat: "Lead Generation Creatives", desc: "Seasonal lead-gen creative tied to a WhatsApp funnel.", tools: ["Illustrator"] },
   ],
 
+  caseStudies: [
+    {
+      id: "zenfit",
+      title: "ZenFit",
+      subtitle: "AI-Powered Health Platform",
+      kicker: "UX / Product Design",
+      tagline: "Hyper-personalized nutritional supplement recommendations combining structured health profiles with GPT-4 reasoning — addressing a critical gap in the $50B+ supplement industry.",
+      challenge: "Mainstream platforms offer generalized stacks that ignore age, allergies, and fitness goals — creating real safety risks and decision paralysis for users.",
+      approach: "Built a safety-first AI pipeline: user inputs flow through prompt engineering into GPT-4, pass allergen cross-referencing and dosage guardrails, then deliver a personalized plan in under 5 seconds.",
+      link: "https://zen-fit-casestudy.vercel.app",
+      color: "#22D3EE",
+      year: "2025",
+      stats: [
+        { value: "<5s", label: "Response SLA" },
+        { value: "8",   label: "User Segments" },
+        { value: "6",   label: "Team Size" },
+        { value: "30+", label: "Prompt Iterations" },
+      ],
+      tools: ["Figma", "Balsamiq", "Adobe XD"],
+      highlights: ["AI Personalization", "Safety Validation", "Wearable Sync", "Coach Marketplace"],
+      flowSteps: ["User Input", "AI Pipeline", "Safety Check", "Your Plan"],
+    },
+  ],
+
   caseStudy: {
     title: "The Ultimate Guide for Tamil Nadu",
     kicker: "Featured Case Study",
@@ -110,6 +134,7 @@ window.DATA = {
     { id: "about", label: "About" },
     { id: "skills", label: "Skills" },
     { id: "work", label: "Portfolio" },
+    { id: "case-studies", label: "Case Study" },
     { id: "contact", label: "Contact" },
   ],
 };

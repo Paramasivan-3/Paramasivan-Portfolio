@@ -38,6 +38,7 @@ function App() {
         <About />
         <CreativeProcess />
         <Work />
+        <CaseStudies />
         <Achievements />
         <Testimonials />
         <Contact />
